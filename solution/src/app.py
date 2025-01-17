@@ -3,8 +3,8 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from src.api import api_router
-from src.db import ENGINE, Base
+from solution.src.api import api_router
+from solution.src.db import ENGINE, Base
 
 
 Base.metadata.create_all(ENGINE)

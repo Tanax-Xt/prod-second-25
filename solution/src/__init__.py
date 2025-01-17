@@ -1,4 +1,4 @@
-from src.api.business.models import Business
+from solution.src.api.business.models import Business
 
 
 __all__ = [
