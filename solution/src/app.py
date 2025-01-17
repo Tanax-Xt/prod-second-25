@@ -3,7 +3,11 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from api import api_router
+from src.api import api_router
+from src.db import ENGINE, Base
+
+
+Base.metadata.create_all(ENGINE)
 
 app = FastAPI()
 
