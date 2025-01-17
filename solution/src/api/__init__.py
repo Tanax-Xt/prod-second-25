@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from solution.src.api import ping
+from src.api import ping
 
 api_router = APIRouter(prefix="/api")
 
