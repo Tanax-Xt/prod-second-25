@@ -1,10 +1,10 @@
 FROM python:3.12-alpine3.21
 
-WORKDIR /usr/src/app
+WORKDIR solution
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./src/app.py" ]
+CMD [ "python", "/src/app.py" ]
