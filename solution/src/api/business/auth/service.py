@@ -11,7 +11,7 @@ from src.security import get_password_hash
 
 
 def is_business_email_registered(session: Session, email: str, name: str) -> bool:
-    return session.query(exists().where(((Business.email == email) & (Business.name == name)))).scalar()
+    return session.query(exists().where(((Business.email == email) | (Business.name == name)))).scalar()
 
 
 def create_business(session: Session, schema: BusinessCreate) -> Business:
