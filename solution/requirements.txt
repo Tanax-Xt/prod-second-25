@@ -6,5 +6,5 @@ pyheck
 psycopg[binary]
 jwt
 PyJwt
-'pydantic[email]'
+pydantic[email]
 redis
