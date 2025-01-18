@@ -1,4 +1,3 @@
-import os
 import typing
 
 from pydantic import DirectoryPath, NewPath, PostgresDsn, computed_field
@@ -11,23 +10,16 @@ GeneratedPath = NewPath | DirectoryPath
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # DEBUG: bool
-    #
-    # APP_NAME: str
-    # APP_VERSION: str
-    #
-    # API_MAX_AVATAR_SIZE: int
-    # API_MAX_SEARCH_PARAMS_LIMIT: int
-    #
-    # JWT_SECRET: str
-    # JWT_ALGORITHM: str
-    # JWT_EXPIRE_MINUTES: int
+    JWT_EXPIRE_MINUTES: int = 1440
 
     POSTGRES_USERNAME: str
     POSTGRES_PASSWORD: str
     POSTGRES_PORT: int
     POSTGRES_HOST: str
     POSTGRES_DATABASE: str
+
+    REDIS_HOST: str
+    REDIS_PORT: int
 
     @computed_field
     @property
@@ -45,12 +37,12 @@ class Settings(BaseSettings):
         "persistAuthorization": True,
     }
 
-    def model_post_init(self, _: typing.Any) -> None:
-        attrs = self.__annotations__.items()
-        generated_path_attrs = (attr for attr, attr_type in attrs if attr_type == GeneratedPath)
-        for attr in generated_path_attrs:
-            pathname = getattr(self, attr)
-            os.makedirs(pathname, exist_ok=True)
+    # def model_post_init(self, _: typing.Any) -> None:
+    #     attrs = self.__annotations__.items()
+    #     generated_path_attrs = (attr for attr, attr_type in attrs if attr_type == GeneratedPath)
+    #     for attr in generated_path_attrs:
+    #         pathname = getattr(self, attr)
+    #         os.makedirs(pathname, exist_ok=True)
 
 
 settings = Settings()

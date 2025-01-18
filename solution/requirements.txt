@@ -4,3 +4,7 @@ pydantic_settings
 sqlalchemy
 pyheck
 psycopg[binary]
+jwt
+PyJwt
+'pydantic[email]'
+redis

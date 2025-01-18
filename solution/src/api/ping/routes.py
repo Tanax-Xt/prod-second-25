@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/ping", tags=["ping"])
 
