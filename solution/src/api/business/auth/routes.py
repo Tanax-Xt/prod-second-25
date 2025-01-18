@@ -1,12 +1,17 @@
-import uuid
-
 from fastapi import APIRouter, status, HTTPException
 
-from src.api.business.auth.schemas import BusinessCreate
-from src.api.business.auth.service import is_business_email_registered, create_business
-from src.api.service import set_secret
+from src.api.business.auth.schemas import BusinessCreate, BusinessLogin
+from src.api.business.auth.service import is_business_email_registered, create_business, update_secret, \
+    get_business_by_email
 from src.db.deps import Session
-from src.security import create_access_token
+from src.security import create_access_token, is_valid_password
+from fastapi import APIRouter, status, HTTPException
+
+from src.api.business.auth.schemas import BusinessCreate, BusinessLogin
+from src.api.business.auth.service import is_business_email_registered, create_business, update_secret, \
+    get_business_by_email
+from src.db.deps import Session
+from src.security import create_access_token, is_valid_password
 
 auth_router = APIRouter(prefix="/auth", tags=["business-auth"])
 
@@ -17,6 +22,16 @@ async def sing_up(business_create_model: BusinessCreate, session: Session):
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered.")
 
     business = create_business(session, business_create_model)
-    secret = uuid.uuid4().hex
-    set_secret(business.id.hex, secret, 'secret')
+    secret = update_secret(business)
+    return create_access_token(business.id.hex, secret)
+
+
+@auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
+async def sing_in(business_create_model: BusinessLogin, session: Session):
+    business = get_business_by_email(session, business_create_model.email)
+
+    if not business or not is_valid_password(business_create_model.password, business.password):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password.")
+
+    secret = update_secret(business)
     return create_access_token(business.id.hex, secret)
