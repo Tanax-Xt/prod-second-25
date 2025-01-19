@@ -15,6 +15,8 @@ class Business(Base):
     email: Mapped[str] = mapped_column(index=True, unique=True)
     password: Mapped[str] = mapped_column()
 
+    promos: Mapped[list["Promo"]] = relationship(back_populates="business")
+
 
 class PromoToCategory(Base):
     promo_id: Mapped[int] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
@@ -47,8 +49,11 @@ class Promo(Base):
     active_from: Mapped[date]
     active_until: Mapped[Optional[date]]
     mode: Mapped[str] = mapped_column()
-    promo_common: Mapped[str] = mapped_column()
+    promo_common: Mapped[Optional[str]] = mapped_column()
 
     categories: Mapped[Optional[list["PromoCategory"]]] = relationship(back_populates="promos",
                                                                        secondary="promo_to_category")
     promo_unique: Mapped[Optional[list["SubPromo"]]] = relationship(back_populates="promo")
+
+    business_id: Mapped[str] = mapped_column(ForeignKey("business.id", ondelete="SET NULL"), default=None)
+    business: Mapped["Business"] = relationship(back_populates="promos")
