@@ -10,7 +10,7 @@ from src.config import settings
 def create_access_token(subject: int | str, secret: str, minutes: int = settings.JWT_EXPIRE_MINUTES) -> Token:
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=minutes)
     to_encode = JWT(exp=expires_at, sub=subject)
-    access_token = jwt.encode(to_encode.model_dump(), secret, algorithm="HS256")
+    access_token = jwt.encode(to_encode.model_dump(), secret, algorithm=settings.JWT_ALGORITHM)
     return Token(access_token=access_token, expires_at=expires_at)
 
 

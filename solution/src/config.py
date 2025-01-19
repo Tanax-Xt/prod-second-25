@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     JWT_EXPIRE_MINUTES: int = 1440
+    JWT_ALGORITHM: str = "HS256"
 
     POSTGRES_USERNAME: str
     POSTGRES_PASSWORD: str
@@ -21,9 +22,11 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
 
+    BUSINESS_SECRET_PREFIX: str = "b-secret"
+
     @computed_field
     @property
-    def POSTGRES_URI(self) -> PostgresDsn:
+    def POSTGRES_URI(self) -> MultiHostUrl:
         return MultiHostUrl.build(
             scheme="postgresql+psycopg",
             username=self.POSTGRES_USERNAME,

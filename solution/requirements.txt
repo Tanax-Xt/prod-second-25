@@ -7,3 +7,5 @@ psycopg[binary]
 PyJwt
 pydantic[email]
 redis
+pydantic_extra_types
+pycountry
