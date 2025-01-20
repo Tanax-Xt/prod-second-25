@@ -21,7 +21,7 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
         image_url=str(schema.image_url),
         age_from=schema.target.age_from,
         age_until=schema.target.age_until,
-        country=schema.target.country.country if schema.target.country is not None else None,
+        country=schema.target.country,
         max_count=schema.max_count,
         active_from=schema.active_from,
         active_until=schema.active_until,

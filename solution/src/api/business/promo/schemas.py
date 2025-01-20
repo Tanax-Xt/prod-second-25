@@ -6,8 +6,8 @@ from pydantic import BaseModel, constr, conint, HttpUrl
 from pydantic_extra_types.country import CountryAlpha2
 
 
-class Country(BaseModel):
-    country: CountryAlpha2
+# class Country(BaseModel):
+#     country: CountryAlpha2
 
 
 # class PromoDescription(BaseModel):
@@ -21,7 +21,7 @@ class Country(BaseModel):
 class Target(BaseModel):
     age_from: Optional[conint(ge=0, le=100)] = None
     age_until: Optional[conint(ge=0, le=100)] = None
-    country: Optional[Country] = None
+    country: Optional[CountryAlpha2] = None
     categories: Optional[List[constr(max_length=20)]] = None
 
 
