@@ -11,7 +11,7 @@ def create_access_token(subject: int | str, secret: str, minutes: int = settings
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=minutes)
     to_encode = JWT(exp=expires_at, sub=subject)
     access_token = jwt.encode(to_encode.model_dump(), secret, algorithm=settings.JWT_ALGORITHM)
-    return Token(access_token=access_token, expires_at=expires_at)
+    return Token(token=access_token, expires_at=expires_at)
 
 
 def is_valid_password(plain_password: str, hashed_password: str) -> bool:
