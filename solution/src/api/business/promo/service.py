@@ -1,7 +1,9 @@
+import uuid
+
 from fastapi import HTTPException, status
 
 from src.api.business.models import Promo, Business, SubPromo, PromoCategory
-from src.api.business.promo.schemas import PromoCreate
+from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum
 from src.db.deps import Session
 
 
@@ -18,7 +20,7 @@ def get_category(category_name: str, session: Session) -> PromoCategory:
 def create_promo(session: Session, schema: PromoCreate, business: Business) -> Promo:
     promo = Promo(
         description=schema.description,
-        image_url=str(schema.image_url),
+        image_url=str(schema.image_url) if schema.image_url is not None else None,
         age_from=schema.target.age_from,
         age_until=schema.target.age_until,
         country=schema.target.country,
@@ -49,3 +51,39 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
     session.refresh(promo)
 
     return promo
+
+
+def get_promo_by_id(id: uuid.UUID, session: Session) -> Promo:
+    return session.query(Promo).filter(Promo.id == id).first()
+
+
+def to_promo_create(promo: Promo) -> PromoCreate:
+    return PromoCreate(
+        description=promo.description,
+        target=Target(
+            age_from=promo.age_from,
+            age_until=promo.age_until,
+            country=promo.country,
+            categories=[c.name for c in promo.categories] if promo.categories else None
+        ),
+        image_url=promo.image_url,
+        max_count=promo.max_count,
+        active_from=promo.active_from,
+        active_until=promo.active_until,
+        mode=PromoEnum(promo.mode),
+        promo_common=promo.promo_common,
+        promo_unique=[sp.promo_common for sp in promo.promo_unique] if promo.promo_unique else None
+    )
+
+
+def promo_to_response(promo: Promo) -> PromoResponse:
+    base_data = to_promo_create(promo)
+    return PromoResponse(
+        **base_data.model_dump(exclude_unset=True),
+        promo_id=str(promo.id),
+        company_id=str(promo.business.id),
+        company_name=promo.business.name,
+        like_count=promo.like_count,
+        used_count=promo.used_count,
+        active=promo.active
+    )

@@ -26,7 +26,7 @@ class PromoToCategory(Base):
 class SubPromo(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     promo_common: Mapped[str] = mapped_column()
-    active: Mapped[bool] = True
+    active: Mapped[bool] = mapped_column(default=True)
 
     promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="SET NULL"), default=None)
     promo: Mapped["Promo"] = relationship(back_populates="promo_unique")
@@ -47,11 +47,11 @@ class Promo(Base):
     age_until: Mapped[Optional[int]] = mapped_column()
     country: Mapped[Optional[str]] = mapped_column()
     max_count: Mapped[int] = mapped_column()
-    active_from: Mapped[Optional[date]]
-    active_until: Mapped[Optional[date]]
+    active_from: Mapped[Optional[date]] = mapped_column()
+    active_until: Mapped[Optional[date]] = mapped_column()
     mode: Mapped[str] = mapped_column()
     promo_common: Mapped[Optional[str]] = mapped_column()
-    active: Mapped[bool] = True
+    active: Mapped[bool] = mapped_column(default=True)
 
     categories: Mapped[Optional[list["PromoCategory"]]] = relationship(back_populates="promos",
                                                                        secondary="promo_to_category")
@@ -59,3 +59,6 @@ class Promo(Base):
 
     business_id: Mapped[str] = mapped_column(ForeignKey("business.id", ondelete="SET NULL"), default=None)
     business: Mapped["Business"] = relationship(back_populates="promos")
+
+    like_count: Mapped[int] = mapped_column(default=0)
+    used_count: Mapped[int] = mapped_column(default=0)

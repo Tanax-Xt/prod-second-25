@@ -2,7 +2,7 @@ import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, constr, conint, HttpUrl
+from pydantic import BaseModel, constr, conint, HttpUrl, Field
 from pydantic_extra_types.country import CountryAlpha2
 
 
@@ -44,8 +44,17 @@ class PromoCreate(BaseModel):
     target: Target
     image_url: Optional[HttpUrl] = None
     max_count: Optional[conint(ge=0, le=100000000)]
-    active_from: datetime.date = None
-    active_until: datetime.date = None
+    active_from: Optional[datetime.date] = None
+    active_until: Optional[datetime.date] = None
     mode: PromoEnum
     promo_common: Optional[constr(min_length=5, max_length=30)] = None
     promo_unique: Optional[List[constr(min_length=3, max_length=30)]] = None
+
+
+class PromoResponse(PromoCreate):
+    promo_id: constr(min_length=1, max_length=50)
+    company_id: constr(min_length=1, max_length=50)
+    company_name: constr(max_length=100)
+    like_count: conint(ge=0)
+    used_count: conint(ge=0)
+    active: bool
