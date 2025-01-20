@@ -4,11 +4,10 @@ import jwt
 from fastapi import status, HTTPException
 from sqlalchemy.sql import exists
 
-from src.api.business.auth.schemas import BusinessCreate
-from src.api.business.models import Business
 from src.api.schemas import JWT
 from src.api.service import get_secret
 from src.api.service import set_secret
+from src.api.user.auth.schemas import UserCreate
 from src.api.user.models import User
 from src.config import settings
 from src.db.deps import Session
@@ -16,25 +15,29 @@ from src.security import get_password_hash
 
 
 def get_user_by_email(session: Session, email: str) -> User | None:
-    return session.query(Business).filter(Business.email == email).first()
+    return session.query(User).filter(User.email == email).first()
 
 
-# def is_business_email_registered(session: Session, email: str, name: str) -> bool:
-#     return session.query(exists().where(((Business.email == email) | (Business.name == name)))).scalar()
+def is_user_email_registered(session: Session, email: str) -> bool:
+    return session.query(exists().where(User.email == email)).scalar()
 
 
-# def create_business(session: Session, schema: BusinessCreate) -> Business:
-#     business = Business(
-#         email=schema.email,
-#         password=get_password_hash(schema.password),
-#         name=schema.name
-#     )
-#
-#     session.add(business)
-#     session.commit()
-#     session.refresh(business)
-#
-#     return business
+def create_user(session: Session, schema: UserCreate) -> User:
+    user = User(
+        email=schema.email,
+        password=get_password_hash(schema.password),
+        name=schema.name,
+        surname=schema.surname,
+        image_url=schema.image_url,
+        age=schema.other.age,
+        country=schema.other.country
+    )
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
 
 
 def update_secret(id: str) -> str:
