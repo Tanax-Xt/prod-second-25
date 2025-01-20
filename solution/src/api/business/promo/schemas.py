@@ -19,19 +19,19 @@ class PromoImageURL(BaseModel):
 
 
 class Target(BaseModel):
-    age_from: conint(ge=0, le=100)
-    age_until: conint(ge=0, le=100)
-    country: Country
-    categories: List[constr(min_length=2, max_length=20)]
+    age_from: Optional[conint(ge=0, le=100)]
+    age_until: Optional[conint(ge=0, le=100)]
+    country: Optional[Country]
+    categories: Optional[List[constr(max_length=20)]]
 
 
 class PromoPatch(BaseModel):
-    description: PromoDescription
-    image_url: PromoImageURL
-    target: Target
-    max_count: Optional[conint(ge=0, le=100000000)]
-    active_from: datetime.date
-    active_until: datetime.date
+    description: Optional[PromoDescription] = None
+    image_url: Optional[PromoImageURL] = None
+    target: Optional[Target] = None
+    max_count: Optional[conint(ge=0, le=100000000)] = None
+    active_from: Optional[datetime.date] = None
+    active_until: Optional[datetime.date] = None
 
 
 class PromoEnum(str, Enum):
@@ -39,7 +39,13 @@ class PromoEnum(str, Enum):
     unique = "UNIQUE"
 
 
-class PromoCreate(PromoPatch):
+class PromoCreate(BaseModel):
+    description: PromoDescription
+    image_url: Optional[PromoImageURL] = None
+    target: Target
+    max_count: Optional[conint(ge=0, le=100000000)]
+    active_from: datetime.date = None
+    active_until: datetime.date = None
     mode: PromoEnum
-    promo_common: Optional[constr(min_length=5, max_length=30)]
-    promo_unique: Optional[List[constr(min_length=3, max_length=30)]]
+    promo_common: Optional[constr(min_length=5, max_length=30)] = None
+    promo_unique: Optional[List[constr(min_length=3, max_length=30)]] = None

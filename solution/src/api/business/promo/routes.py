@@ -15,4 +15,4 @@ async def promo(promo: PromoCreate, Authorization: str = Header(), session: Sess
 
     business = get_business_by_token(Authorization, session)
     promo = create_promo(session, promo, business)
-    return promo
+    return {"id": promo.id}

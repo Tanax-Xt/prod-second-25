@@ -32,7 +32,7 @@ class SubPromo(Base):
 
 
 class PromoCategory(Base):
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True, index=True)
 
     promos: Mapped[list["Promo"]] = relationship(back_populates="categories", secondary="promo_to_category")
