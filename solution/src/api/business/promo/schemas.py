@@ -10,24 +10,24 @@ class Country(BaseModel):
     country: CountryAlpha2
 
 
-class PromoDescription(BaseModel):
-    description: constr(min_length=10, max_length=300)
+# class PromoDescription(BaseModel):
+#     description: constr(min_length=10, max_length=300)
 
 
-class PromoImageURL(BaseModel):
-    image_url: HttpUrl
+# class PromoImageURL(BaseModel):
+#     image_url: Optional[HttpUrl] = None
 
 
 class Target(BaseModel):
-    age_from: Optional[conint(ge=0, le=100)]
-    age_until: Optional[conint(ge=0, le=100)]
-    country: Optional[Country]
-    categories: Optional[List[constr(max_length=20)]]
+    age_from: Optional[conint(ge=0, le=100)] = None
+    age_until: Optional[conint(ge=0, le=100)] = None
+    country: Optional[Country] = None
+    categories: Optional[List[constr(max_length=20)]] = None
 
 
 class PromoPatch(BaseModel):
-    description: Optional[PromoDescription] = None
-    image_url: Optional[PromoImageURL] = None
+    description: Optional[constr(min_length=10, max_length=300)] = None
+    image_url: Optional[HttpUrl] = None
     target: Optional[Target] = None
     max_count: Optional[conint(ge=0, le=100000000)] = None
     active_from: Optional[datetime.date] = None
@@ -40,9 +40,9 @@ class PromoEnum(str, Enum):
 
 
 class PromoCreate(BaseModel):
-    description: PromoDescription
-    image_url: Optional[PromoImageURL] = None
+    description: constr(min_length=10, max_length=300)
     target: Target
+    image_url: Optional[HttpUrl] = None
     max_count: Optional[conint(ge=0, le=100000000)]
     active_from: datetime.date = None
     active_until: datetime.date = None

@@ -17,11 +17,11 @@ def get_category(category_name: str, session: Session) -> PromoCategory:
 
 def create_promo(session: Session, schema: PromoCreate, business: Business) -> Promo:
     promo = Promo(
-        description=schema.description.description,
-        image_url=str(schema.image_url.image_url),
+        description=schema.description,
+        image_url=str(schema.image_url),
         age_from=schema.target.age_from,
         age_until=schema.target.age_until,
-        country=schema.target.country.country,
+        country=schema.target.country.country if schema.target.country is not None else None,
         max_count=schema.max_count,
         active_from=schema.active_from,
         active_until=schema.active_until,
@@ -29,9 +29,10 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
         business=business
     )
 
-    for category_name in schema.target.categories:
-        category = get_category(category_name, session)
-        promo.categories.append(category)
+    if schema.target.categories is not None:
+        for category_name in schema.target.categories:
+            category = get_category(category_name, session)
+            promo.categories.append(category)
 
     if schema.mode == "UNIQUE":
         promos = []
