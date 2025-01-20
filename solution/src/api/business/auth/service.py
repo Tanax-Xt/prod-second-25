@@ -18,8 +18,8 @@ def get_business_by_email(session: Session, email: str) -> Business | None:
     return session.query(Business).filter(Business.email == email).first()
 
 
-def is_business_email_registered(session: Session, email: str, name: str) -> bool:
-    return session.query(exists().where(((Business.email == email) | (Business.name == name)))).scalar()
+def is_business_email_registered(session: Session, email: str,) -> bool:
+    return session.query(exists().where(Business.email == email)).scalar()
 
 
 def create_business(session: Session, schema: BusinessCreate) -> Business:

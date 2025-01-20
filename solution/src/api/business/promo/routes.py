@@ -16,3 +16,18 @@ async def promo(promo: PromoCreate, Authorization: str = Header(), session: Sess
     business = get_business_by_token(Authorization, session)
     promo = create_promo(session, promo, business)
     return {"id": promo.id}
+
+
+@promo_router.get("", status_code=status.HTTP_200_OK)
+async def promo_list(Authorization: str = Header(), session: Session = Session):
+    pass
+
+
+@promo_router.get("/{id}", status_code=status.HTTP_200_OK)
+async def get_promo(id: str):
+    pass
+
+
+@promo_router.patch("/{id}", status_code=status.HTTP_200_OK)
+async def patch_promo(id: str):
+    pass

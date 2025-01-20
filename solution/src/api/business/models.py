@@ -11,7 +11,7 @@ from src.db.models import Base
 
 class Business(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name: Mapped[str] = mapped_column(index=True, unique=True)
+    name: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(index=True, unique=True)
     password: Mapped[str] = mapped_column()
 

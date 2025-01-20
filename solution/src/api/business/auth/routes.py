@@ -11,7 +11,7 @@ auth_router = APIRouter(prefix="/auth", tags=["business-auth"])
 
 @auth_router.post("/sign-up", status_code=status.HTTP_200_OK)
 async def sing_up(business_create_model: BusinessCreate, session: Session):
-    if is_business_email_registered(session, business_create_model.email, business_create_model.name):
+    if is_business_email_registered(session, business_create_model.email):
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered.")
 
     business = create_business(session, business_create_model)
