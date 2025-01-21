@@ -1,3 +1,16 @@
+"""
+This code may be based on "prod-hackaton-msk24" by Danila Sedelnikov <sedelnikovdanila@gmail.com> (https://github.com/Tanax-Xt).
+Available at: https://github.com/Tanax-Xt/prod-hackaton-msk24
+
+This code may be based on "fusion" by Rapid Integration (https://github.com/rapid-integration).
+Available at: https://github.com/rapid-integration/fusion
+
+This code may be based on "api" by Quotepedia (https://github.com/quotepedia).
+Available at: https://github.com/quotepedia/api
+
+Modifications made by Danila Sedelnikov on January 2025.
+"""
+
 import uuid
 
 from fastapi import APIRouter, status, Header, HTTPException, Response, Depends
@@ -53,7 +66,8 @@ async def get_promo(id: uuid.UUID, Authorization: str = Header(), session: Sessi
     return promo_to_response(promo)
 
 
-@promo_router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse, response_model_exclude_none=True)
+@promo_router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse,
+                    response_model_exclude_none=True)
 async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = Header(),
                       session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
