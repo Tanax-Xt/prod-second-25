@@ -28,7 +28,7 @@ def create_user(session: Session, schema: UserCreate) -> User:
         password=get_password_hash(schema.password),
         name=schema.name,
         surname=schema.surname,
-        image_url=schema.image_url,
+        image_url=str(schema.image_url) if schema.image_url is not None else None,
         age=schema.other.age,
         country=schema.other.country
     )
@@ -46,21 +46,21 @@ def update_secret(id: str) -> str:
     return secret
 
 
-# def get_business_by_token(token: str, session: Session) -> Business:
-#     raw_token = token.split(" ")[1]
-#     try:
-#         unverified_data = jwt.decode(raw_token, options={"verify_signature": False})
-#         sub = unverified_data.get("sub")
-#         if not sub:
-#             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Email not found in token")
-#
-#         secret = get_secret(sub, settings.BUSINESS_SECRET_PREFIX)
-#
-#         data = JWT(**jwt.decode(raw_token, secret, algorithms=[settings.JWT_ALGORITHM]))
-#     except Exception as e:
-#         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Failed to verify credentials")
-#
-#     business = session.get(Business, data.sub)
-#     if not business:
-#         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
-#     return business
+def get_user_by_token(token: str, session: Session) -> User:
+    raw_token = token.split(" ")[1]
+    try:
+        unverified_data = jwt.decode(raw_token, options={"verify_signature": False})
+        sub = unverified_data.get("sub")
+        if not sub:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Email not found in token")
+
+        secret = get_secret(sub, settings.USER_SECRET_PREFIX)
+
+        data = JWT(**jwt.decode(raw_token, secret, algorithms=[settings.JWT_ALGORITHM]))
+    except Exception as e:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Failed to verify credentials")
+
+    user = session.get(User, data.sub)
+    if not user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
+    return user
