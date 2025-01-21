@@ -3,9 +3,9 @@ import uuid
 from fastapi import APIRouter, status, Header, HTTPException, Response, Depends
 
 from src.api.business.auth.service import get_business_by_token
-from src.api.business.promo.schemas import PromoCreate, PromoResponse, PromosListSearchParams
+from src.api.business.promo.schemas import PromoCreate, PromoResponse, PromosListSearchParams, PromoPatch
 from src.api.business.promo.service import create_promo, get_promo_by_id, promo_to_response, \
-    get_promos_response_by_business_with_params
+    get_promos_response_by_business_with_params, update_promo
 from src.db.deps import Session
 
 promo_router = APIRouter(prefix="/promo", tags=["business-promo"])
@@ -37,12 +37,12 @@ async def promo_list(response: Response, query: PromosListSearchParams = Depends
 
 @promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse,
                   response_model_exclude_none=True)
-async def get_promo(promo_id: uuid.UUID, Authorization: str = Header(), session: Session = Session):
+async def get_promo(id: uuid.UUID, Authorization: str = Header(), session: Session = Session) -> PromoResponse:
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
     business = get_business_by_token(Authorization, session)
-    promo = get_promo_by_id(promo_id, session)
+    promo = get_promo_by_id(id, session)
 
     if promo is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
@@ -52,6 +52,22 @@ async def get_promo(promo_id: uuid.UUID, Authorization: str = Header(), session:
 
     return promo_to_response(promo)
 
-# @promo_router.patch("/{id}", status_code=status.HTTP_200_OK)
-# async def patch_promo(id: str):
-#     pass
+
+@promo_router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse, response_model_exclude_none=True)
+async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = Header(),
+                      session: Session = Session):
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    business = get_business_by_token(Authorization, session)
+    promo = get_promo_by_id(id, session)
+
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
+    if promo.business_id != business.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Промокод не принадлежит этой компании.")
+
+    promo = update_promo(promo, schema, session)
+
+    return promo_to_response(promo)

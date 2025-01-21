@@ -4,7 +4,8 @@ import uuid
 from fastapi import HTTPException, status
 
 from src.api.business.models import Promo, Business, SubPromo, PromoCategory
-from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams
+from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams, \
+    PromoPatch
 from src.db.deps import Session
 
 
@@ -114,3 +115,21 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
         promos[::] = promos[:params.limit]
 
     return [promo_to_response(promo) for promo in promos]
+
+
+def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
+    for param in schema.dict(exclude_unset=True):
+        if param == "target":
+            promo.age_from = None
+            promo.age_until = None
+            promo.country = None
+            promo.categories.clear()
+
+            for subparam in schema.target.dict(exclude_unset=True):
+                setattr(promo, subparam, getattr(schema.target, subparam))
+        else:
+            setattr(promo, param, getattr(schema, param))
+
+    session.commit()
+    session.refresh(promo)
+    return promo
