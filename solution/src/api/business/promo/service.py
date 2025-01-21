@@ -1,9 +1,10 @@
+import datetime
 import uuid
 
 from fastapi import HTTPException, status
 
 from src.api.business.models import Promo, Business, SubPromo, PromoCategory
-from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum
+from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams
 from src.db.deps import Session
 
 
@@ -92,5 +93,24 @@ def promo_to_response(promo: Promo) -> PromoResponse:
     )
 
 
-def get_promos_response_by_business(business: Business) -> list[PromoResponse]:
-    return [promo_to_response(promo) for promo in business.promos]
+def get_promos_response_by_business_with_params(business: Business, params: PromosListSearchParams) -> list[
+    PromoResponse]:
+    if len(params.country) > 0:
+        promos = [promo for promo in
+                  filter(lambda p: p.country is None or p.country in params.country, business.promos)]
+    else:
+        promos = [promo for promo in business.promos]
+
+    if params.sort_by is not None:
+        if params.sort_by == "active_from":
+            promos.sort(key=lambda p: p.active_from if p.active_from is not None else datetime.date.min, reverse=True)
+        elif params.sort_by == "active_until":
+            promos.sort(key=lambda p: p.active_until if p.active_until is not None else datetime.date.min, reverse=True)
+
+    if params.offset is not None:
+        promos[::] = promos[params.offset:]
+
+    if params.limit is not None:
+        promos[::] = promos[:params.limit]
+
+    return [promo_to_response(promo) for promo in promos]

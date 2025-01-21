@@ -1,9 +1,12 @@
 import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Literal
 
-from pydantic import BaseModel, constr, conint, HttpUrl, Field
+from fastapi import Depends
+from pydantic import BaseModel, constr, conint, HttpUrl
 from pydantic_extra_types.country import CountryAlpha2
+
+from src.api.business.promo.deps import parse_list_query
 
 
 # class Country(BaseModel):
@@ -58,3 +61,13 @@ class PromoResponse(PromoCreate):
     like_count: conint(ge=0)
     used_count: conint(ge=0)
     active: bool
+
+
+class PromosListSearchParams(BaseModel):
+    limit: Optional[conint(ge=0)] = None
+    offset: Optional[conint(ge=0)] = None
+    sort_by: Optional[Literal["active_from", "active_until"]] = None
+    country: Optional[List[CountryAlpha2]] = Depends(parse_list_query)
+
+
+
