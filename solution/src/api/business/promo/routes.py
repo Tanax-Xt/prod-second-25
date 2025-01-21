@@ -26,7 +26,6 @@ async def promo(promo: PromoCreate, Authorization: str = Header(), session: Sess
 async def promo_list(response: Response, query: PromosListSearchParams = Depends(PromosListSearchParams),
                      Authorization: str = Header(),
                      session: Session = Session):
-    # TODO ДОБАВИТЬ фильтрацию, сортировки и пагинации.
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
