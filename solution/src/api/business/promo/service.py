@@ -8,6 +8,7 @@ from src.db.deps import Session
 
 
 def get_category(category_name: str, session: Session) -> PromoCategory:
+    category_name = category_name.lower()
     category = session.query(PromoCategory).filter(PromoCategory.name == category_name).first()
     if category is None:
         category = PromoCategory(name=category_name)
@@ -53,8 +54,8 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
     return promo
 
 
-def get_promo_by_id(id: uuid.UUID, session: Session) -> Promo:
-    return session.query(Promo).filter(Promo.id == id).first()
+def get_promo_by_id(promo_id: uuid.UUID, session: Session) -> Promo:
+    return session.query(Promo).filter(Promo.id == promo_id).first()
 
 
 def to_promo_create(promo: Promo) -> PromoCreate:
@@ -87,3 +88,7 @@ def promo_to_response(promo: Promo) -> PromoResponse:
         used_count=promo.used_count,
         active=promo.active
     )
+
+
+def get_promos_response_by_business(business: Business) -> list[PromoResponse]:
+    return [promo_to_response(promo) for promo in business.promos]
