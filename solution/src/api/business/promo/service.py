@@ -38,12 +38,14 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
             promo.categories.append(category)
 
     if schema.mode == "UNIQUE":
+        if schema.promo_common is not None or schema.promo_unique is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         promos = []
         for uniq in schema.promo_unique:
             promos.append(SubPromo(promo_common=uniq, promo=promo))
         promo.promo_unique = promos
     else:
-        if schema.promo_common is None:
+        if schema.promo_common is None or schema.promo_unique is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         promo.promo_common = schema.promo_common
 
