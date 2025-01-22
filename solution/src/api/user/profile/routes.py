@@ -19,7 +19,7 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 from src.db.deps import Session
 
-profile_router = APIRouter(prefix="/profile", tags=["user-profile"])
+profile_router = APIRouter(prefix="/profile")
 
 
 @profile_router.get("", status_code=status.HTTP_200_OK, response_model=UserResponse,

@@ -19,7 +19,7 @@ from src.api.business.auth.service import is_business_email_registered, create_b
 from src.db.deps import Session
 from src.security import create_access_token, is_valid_password
 
-auth_router = APIRouter(prefix="/auth", tags=["business-auth"])
+auth_router = APIRouter(prefix="/auth")
 
 
 @auth_router.post("/sign-up", status_code=status.HTTP_200_OK)

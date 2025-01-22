@@ -18,7 +18,7 @@ from src.api.user.auth.service import update_secret, is_user_email_registered, c
 from src.db.deps import Session
 from src.security import create_access_token, is_valid_password
 
-auth_router = APIRouter(prefix="/auth", tags=["user-auth"])
+auth_router = APIRouter(prefix="/auth")
 
 
 @auth_router.post("/sign-up", status_code=status.HTTP_200_OK)

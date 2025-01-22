@@ -35,3 +35,6 @@ class User(Base):
 
     promo_likes: Mapped[Optional[set["Promo"]]] = relationship(back_populates="user_likes",
                                                                   secondary="promo_like_to_user")
+
+    promo_activates: Mapped[Optional[set["Promo"]]] = relationship(back_populates="user_activates",
+                                                                  secondary="promo_activate_to_user")

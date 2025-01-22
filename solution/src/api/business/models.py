@@ -59,6 +59,10 @@ class PromoLikeToUser(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
     promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
 
+class PromoActivateToUser(Base):
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
+    promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
+
 
 class Promo(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -81,7 +85,9 @@ class Promo(Base):
     business_id: Mapped[str] = mapped_column(ForeignKey("business.id", ondelete="SET NULL"), default=None)
     business: Mapped["Business"] = relationship(back_populates="promos")
 
-    # like_count: Mapped[int] = mapped_column(default=0)
     user_likes: Mapped[Optional[set["User"]]] = relationship(back_populates="promo_likes",
                                                              secondary="promo_like_to_user")
+
+    user_activates: Mapped[Optional[set["User"]]] = relationship(back_populates="promo_activates",
+                                                             secondary="promo_activate_to_user")
     used_count: Mapped[int] = mapped_column(default=0)

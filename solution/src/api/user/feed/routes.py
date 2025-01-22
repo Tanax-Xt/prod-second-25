@@ -15,25 +15,27 @@ import uuid
 
 from fastapi import APIRouter, status, Header, HTTPException, Response, Depends
 
+from src.api.user.auth.service import get_user_by_token
 # from src.api.business.auth.service import get_business_by_token
 # from src.api.business.promo.schemas import PromoCreate, PromoResponse, PromosListSearchParams, PromoPatch
 # from src.api.business.promo.service import create_promo, get_promo_by_id, promo_to_response, \
 #     get_promos_response_by_business_with_params, update_promo
-from src.api.user.feed.schemas import PromoToUserSearchParams
+from src.api.user.feed.schemas import PromoToUserSearchParams, PromoForUser
+from src.api.user.feed.service import get_promos_response_to_user_with_params
 from src.db.deps import Session
 
-feed_router = APIRouter(prefix="/feed", tags=["user-feed"])
+feed_router = APIRouter(prefix="/feed")
 
-@feed_router.get("", status_code=status.HTTP_200_OK, # response_model=list[PromoResponse],
+@feed_router.get("", status_code=status.HTTP_200_OK, response_model=list[PromoForUser],
                   response_model_exclude_none=True)
 async def promo_list(response: Response, query: PromoToUserSearchParams = Depends(PromoToUserSearchParams),
                      Authorization: str = Header(),
                      session: Session = Session):
-    pass
-    # if not Authorization or not Authorization.startswith("Bearer "):
-    #     raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
-    #
-    # business = get_business_by_token(Authorization, session)
-    # promos, total_count = get_promos_response_by_business_with_params(business, query)
-    # response.headers["X-Total-Count"] = str(total_count)
-    # return promos
+
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    user = get_user_by_token(Authorization, session)
+    promos, total_count = get_promos_response_to_user_with_params(user, query, session)
+    response.headers["X-Total-Count"] = str(total_count)
+    return promos

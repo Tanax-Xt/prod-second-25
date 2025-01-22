@@ -13,7 +13,7 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 from typing import Optional
 
-from pydantic import BaseModel, constr, conint, validator
+from pydantic import BaseModel, constr, conint, validator, HttpUrl
 
 
 class PromoToUserSearchParams(BaseModel):
@@ -26,3 +26,16 @@ class PromoToUserSearchParams(BaseModel):
     @validator('category')
     def lowercase_categories(cls, v):
         return v.lower() if v is not None else None
+
+
+class PromoForUser(BaseModel):
+    promo_id: constr(min_length=1, max_length=50)
+    company_id: constr(min_length=1, max_length=50)
+    company_name: constr(max_length=100)
+    description: constr(min_length=10, max_length=300)
+    image_url: Optional[HttpUrl] = None
+    active: bool
+    is_activated_by_user: bool
+    like_count: conint(ge=0)
+    is_liked_by_user: bool
+    comment_count: conint(ge=0)

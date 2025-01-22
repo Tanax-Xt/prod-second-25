@@ -21,7 +21,7 @@ from src.api.business.promo.service import create_promo, get_promo_by_id, promo_
     get_promos_response_by_business_with_params, update_promo
 from src.db.deps import Session
 
-promo_router = APIRouter(prefix="/promo", tags=["business-promo"])
+promo_router = APIRouter(prefix="/promo")
 
 
 @promo_router.post("", status_code=status.HTTP_201_CREATED)
