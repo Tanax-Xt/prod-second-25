@@ -15,11 +15,11 @@ import datetime
 from enum import Enum
 from typing import List, Optional, Literal
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from pydantic import BaseModel, constr, conint, HttpUrl, validator
 from pydantic_extra_types.country import CountryAlpha2
 
-from src.api.business.promo.deps import parse_list_query
+from src.api.business.promo.deps import parse_list_query, Country
 
 
 # class Country(BaseModel):
@@ -37,7 +37,7 @@ from src.api.business.promo.deps import parse_list_query
 class Target(BaseModel):
     age_from: Optional[conint(ge=0, le=100)] = None
     age_until: Optional[conint(ge=0, le=100)] = None
-    country: Optional[CountryAlpha2] = None
+    country: Optional[str] = None
     categories: Optional[List[constr(min_length=2, max_length=20)]] = None
 
     @validator('categories')
@@ -48,7 +48,14 @@ class Target(BaseModel):
 
     @validator('country')
     def lowercase_country(cls, v):
-        return v.lower() if v is not None else None
+        if v is not None:
+            try:
+                x = Country(country=v).country
+                return v
+            except Exception:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        else:
+            return None
 
 
 class PromoPatch(BaseModel):

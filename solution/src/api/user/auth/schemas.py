@@ -13,9 +13,11 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 from typing import Optional
 
+from fastapi import HTTPException, status
 from pydantic import constr, HttpUrl, BaseModel, conint, validator
 from pydantic_extra_types.country import CountryAlpha2
 
+from src.api.business.promo.deps import Country
 from src.api.schemas import Email, Password
 
 
@@ -23,9 +25,20 @@ class UserTargetSettings(BaseModel):
     age: conint(ge=0, le=100)
     country: CountryAlpha2
 
+    # @validator('country')
+    # def lowercase_country(cls, v):
+    #     return v.lower() if v is not None else None
+
     @validator('country')
     def lowercase_country(cls, v):
-        return v.lower() if v is not None else None
+        if v is not None:
+            try:
+                x = Country(country=v).country
+                return v
+            except Exception:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        else:
+            return None
 
 
 class UserLogin(Email, Password):

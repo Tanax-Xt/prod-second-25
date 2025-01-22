@@ -112,7 +112,7 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
                                                                                                         int):
     if len(params.country) > 0:
         promos = [promo for promo in
-                  filter(lambda p: p.country is None or p.country in params.country, business.promos)]
+                  filter(lambda p: p.country is None or p.country.lower() in params.country, business.promos)]
     else:
         promos = [promo for promo in business.promos]
 
