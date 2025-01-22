@@ -10,26 +10,31 @@ Available at: https://github.com/quotepedia/api
 
 Modifications made by Danila Sedelnikov on January 2025.
 """
+import uuid
 
-from fastapi import APIRouter, status, Header, HTTPException, Response, Depends
+from fastapi import APIRouter, status, Header, HTTPException
 
+from src.api.business.promo.service import get_promo_by_id
 from src.api.user.auth.service import get_user_by_token
-from src.api.user.feed.schemas import PromoToUserSearchParams, PromoForUser
-from src.api.user.feed.service import get_promos_response_to_user_with_params
+from src.api.user.feed.schemas import PromoForUser
+from src.api.user.feed.service import promo_to_response_for_user
 from src.db.deps import Session
 
-feed_router = APIRouter(prefix="/feed")
+promo_router = APIRouter(prefix="/promo")
 
 
-@feed_router.get("", status_code=status.HTTP_200_OK, response_model=list[PromoForUser],
-                 response_model_exclude_none=True)
-async def promo_list(response: Response, query: PromoToUserSearchParams = Depends(PromoToUserSearchParams),
+@promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoForUser,
+                  response_model_exclude_none=True)
+async def promo_list(id: uuid.UUID,
                      Authorization: str = Header(),
                      session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
     user = get_user_by_token(Authorization, session)
-    promos, total_count = get_promos_response_to_user_with_params(user, query, session)
-    response.headers["X-Total-Count"] = str(total_count)
-    return promos
+    promo = get_promo_by_id(id, session)
+
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
+    return promo_to_response_for_user(promo, user)
