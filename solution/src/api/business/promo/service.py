@@ -16,7 +16,7 @@ import uuid
 
 from fastapi import HTTPException, status
 
-from src.api.business.models import Promo, Business, SubPromo, PromoCategory
+from src.api.business.models import Business, Promo, SubPromo, PromoCategory
 from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams, \
     PromoPatch
 from src.db.deps import Session
@@ -101,14 +101,15 @@ def promo_to_response(promo: Promo) -> PromoResponse:
         promo_id=str(promo.id),
         company_id=str(promo.business.id),
         company_name=promo.business.name,
-        like_count=promo.like_count,
+        like_count=len(promo.user_likes),
         used_count=promo.used_count,
         active=promo.active
     )
 
 
-def get_promos_response_by_business_with_params(business: Business, params: PromosListSearchParams) -> list[
-    PromoResponse]:
+def get_promos_response_by_business_with_params(business: Business, params: PromosListSearchParams) -> (list[
+                                                                                                            PromoResponse],
+                                                                                                        int):
     if len(params.country) > 0:
         promos = [promo for promo in
                   filter(lambda p: p.country is None or p.country in params.country, business.promos)]
@@ -117,9 +118,13 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
 
     if params.sort_by is not None:
         if params.sort_by == "active_from":
-            promos.sort(key=lambda p: p.active_from if p.active_from is not None else datetime.date.min, reverse=True)
+            promos.sort(key=lambda p: p.active_from if p.active_from is not None else datetime.date.max, reverse=True)
         elif params.sort_by == "active_until":
-            promos.sort(key=lambda p: p.active_until if p.active_until is not None else datetime.date.min, reverse=True)
+            promos.sort(key=lambda p: p.active_until if p.active_until is not None else datetime.date.max, reverse=True)
+    else:
+        promos.reverse()
+
+    total_count = len(promos)
 
     if params.offset is not None:
         promos[::] = promos[params.offset:]
@@ -127,7 +132,7 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
     if params.limit is not None:
         promos[::] = promos[:params.limit]
 
-    return [promo_to_response(promo) for promo in promos]
+    return [promo_to_response(promo) for promo in promos], total_count
 
 
 def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:

@@ -13,13 +13,16 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 import uuid
 from datetime import date
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.models import Base
+
+if TYPE_CHECKING:
+    from src.api.user.models import User
 
 
 class Business(Base):
@@ -32,8 +35,8 @@ class Business(Base):
 
 
 class PromoToCategory(Base):
-    promo_id: Mapped[int] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey("promo_category.id", ondelete="CASCADE"), primary_key=True)
+    promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
+    category_id: Mapped[str] = mapped_column(ForeignKey("promo_category.id", ondelete="CASCADE"), primary_key=True)
 
 
 class SubPromo(Base):
@@ -50,6 +53,11 @@ class PromoCategory(Base):
     name: Mapped[str] = mapped_column(unique=True, index=True)
 
     promos: Mapped[list["Promo"]] = relationship(back_populates="categories", secondary="promo_to_category")
+
+
+class PromoLikeToUser(Base):
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
+    promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
 
 
 class Promo(Base):
@@ -73,5 +81,7 @@ class Promo(Base):
     business_id: Mapped[str] = mapped_column(ForeignKey("business.id", ondelete="SET NULL"), default=None)
     business: Mapped["Business"] = relationship(back_populates="promos")
 
-    like_count: Mapped[int] = mapped_column(default=0)
+    # like_count: Mapped[int] = mapped_column(default=0)
+    user_likes: Mapped[Optional[set["User"]]] = relationship(back_populates="promo_likes",
+                                                             secondary="promo_like_to_user")
     used_count: Mapped[int] = mapped_column(default=0)

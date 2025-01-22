@@ -16,7 +16,7 @@ from enum import Enum
 from typing import List, Optional, Literal
 
 from fastapi import Depends
-from pydantic import BaseModel, constr, conint, HttpUrl
+from pydantic import BaseModel, constr, conint, HttpUrl, validator
 from pydantic_extra_types.country import CountryAlpha2
 
 from src.api.business.promo.deps import parse_list_query
@@ -38,7 +38,17 @@ class Target(BaseModel):
     age_from: Optional[conint(ge=0, le=100)] = None
     age_until: Optional[conint(ge=0, le=100)] = None
     country: Optional[CountryAlpha2] = None
-    categories: Optional[List[constr(max_length=20)]] = None
+    categories: Optional[List[constr(min_length=2, max_length=20)]] = None
+
+    @validator('categories')
+    def lowercase_categories(cls, v):
+        if v is not None:
+            return [category.lower() for category in v]
+        return v
+
+    @validator('country')
+    def lowercase_country(cls, v):
+        return v.lower() if v is not None else None
 
 
 class PromoPatch(BaseModel):
@@ -77,7 +87,13 @@ class PromoResponse(PromoCreate):
 
 
 class PromosListSearchParams(BaseModel):
-    limit: Optional[conint(ge=0)] = None
+    limit: Optional[conint(ge=0)] = 10
     offset: Optional[conint(ge=0)] = None
     sort_by: Optional[Literal["active_from", "active_until"]] = None
     country: Optional[List[CountryAlpha2]] = Depends(parse_list_query)
+
+    @validator('country')
+    def lowercase_country(cls, v):
+        if v is not None:
+            return [category.lower() for category in v]
+        return v

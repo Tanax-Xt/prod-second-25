@@ -12,12 +12,15 @@ Modifications made by Danila Sedelnikov on January 2025.
 """
 
 import uuid
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.models import Base
+
+if TYPE_CHECKING:
+    from src.api.business.models import Promo
 
 
 class User(Base):
@@ -29,3 +32,6 @@ class User(Base):
     image_url: Mapped[Optional[str]] = mapped_column()
     age: Mapped[int] = mapped_column()
     country: Mapped[str] = mapped_column()
+
+    promo_likes: Mapped[Optional[set["Promo"]]] = relationship(back_populates="user_likes",
+                                                                  secondary="promo_like_to_user")

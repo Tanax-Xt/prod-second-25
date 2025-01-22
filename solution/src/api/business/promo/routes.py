@@ -43,8 +43,8 @@ async def promo_list(response: Response, query: PromosListSearchParams = Depends
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
     business = get_business_by_token(Authorization, session)
-    promos = get_promos_response_by_business_with_params(business, query)
-    response.headers["X-Total-Count"] = str(len(promos))
+    promos, total_count = get_promos_response_by_business_with_params(business, query)
+    response.headers["X-Total-Count"] = str(total_count)
     return promos
 
 

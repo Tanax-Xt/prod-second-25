@@ -13,27 +13,16 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 from typing import Optional
 
-from pydantic import constr, HttpUrl, BaseModel, conint, validator
-from pydantic_extra_types.country import CountryAlpha2
-
-from src.api.schemas import Email, Password
+from pydantic import BaseModel, constr, conint, validator
 
 
-class UserTargetSettings(BaseModel):
-    age: conint(ge=0, le=100)
-    country: CountryAlpha2
+class PromoToUserSearchParams(BaseModel):
+    limit: Optional[conint(ge=0)] = 10
+    offset: Optional[conint(ge=0)] = None
+    active: Optional[bool] = True
 
-    @validator('country')
-    def lowercase_country(cls, v):
+    category: Optional[constr(min_length=2, max_length=20)] = None
+
+    @validator('category')
+    def lowercase_categories(cls, v):
         return v.lower() if v is not None else None
-
-
-class UserLogin(Email, Password):
-    pass
-
-
-class UserCreate(UserLogin):
-    name: constr(min_length=1, max_length=100)
-    surname: constr(min_length=1, max_length=120)
-    image_url: Optional[HttpUrl] = None
-    other: UserTargetSettings
