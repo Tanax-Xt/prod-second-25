@@ -60,3 +60,9 @@ def delete_comment(comment: Comment, session: Session):
     session.delete(comment)
     session.commit()
 
+
+def update_comment(comment: Comment, schema: CommentText, session: Session):
+    comment.text = schema.text
+    session.commit()
+    session.refresh(comment)
+    return comment
