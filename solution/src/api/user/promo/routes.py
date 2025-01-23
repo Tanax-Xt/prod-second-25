@@ -38,7 +38,7 @@ async def promo_list(id: uuid.UUID,
     if promo is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
 
-    return promo_to_response_for_user(promo, user)
+    return promo_to_response_for_user(promo, user, session)
 
 
 @promo_router.post("/{id}/like", status_code=status.HTTP_200_OK,

@@ -49,7 +49,7 @@ async def promo_list(response: Response, query: PromosListSearchParams = Depends
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
     business = get_business_by_token(Authorization, session)
-    promos, total_count = get_promos_response_by_business_with_params(business, query)
+    promos, total_count = get_promos_response_by_business_with_params(business, query, session)
     response.headers["X-Total-Count"] = str(total_count)
     return promos
 
@@ -69,7 +69,7 @@ async def get_promo(id: uuid.UUID, Authorization: str = Header(None), session: S
     if promo.business_id != business.id:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Промокод не принадлежит этой компании.")
 
-    return promo_to_response(promo)
+    return promo_to_response(promo, session)
 
 
 @promo_router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse,
@@ -96,4 +96,4 @@ async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = He
 
     promo = update_promo(promo, schema, session)
 
-    return promo_to_response(promo)
+    return promo_to_response(promo, session)

@@ -95,7 +95,7 @@ def to_promo_create(promo: Promo) -> PromoCreate:
     )
 
 
-def promo_to_response(promo: Promo) -> PromoResponse:
+def promo_to_response(promo: Promo, session: Session) -> PromoResponse:
     base_data = to_promo_create(promo)
     return PromoResponse(
         **base_data.model_dump(exclude_unset=True),
@@ -104,13 +104,14 @@ def promo_to_response(promo: Promo) -> PromoResponse:
         company_name=promo.business.name,
         like_count=len(promo.user_likes),
         used_count=promo.used_count,
-        active=promo.active
+        active=is_promo_is_active_on_cur_date(promo, session)
     )
 
 
-def get_promos_response_by_business_with_params(business: Business, params: PromosListSearchParams) -> (list[
-                                                                                                            PromoResponse],
-                                                                                                        int):
+def get_promos_response_by_business_with_params(business: Business, params: PromosListSearchParams,
+                                                session: Session) -> (list[
+                                                                          PromoResponse],
+                                                                      int):
     if len(params.country) > 0:
         promos = [promo for promo in
                   filter(lambda p: p.country is None or p.country.lower() in params.country, business.promos)]
@@ -133,7 +134,7 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
     if params.limit is not None:
         promos[::] = promos[:params.limit]
 
-    return [promo_to_response(promo) for promo in promos], total_count
+    return [promo_to_response(promo, session) for promo in promos], total_count
 
 
 def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
@@ -173,3 +174,18 @@ def is_validate_date(age_from: datetime.date, age_until: datetime.date) -> bool:
     if age_from is not None and age_until is not None:
         return age_from <= age_until
     return True
+
+
+def is_promo_is_active_on_cur_date(promo: Promo, session: Session) -> bool:
+    active = (promo.active_from is None or promo.active_from <= datetime.datetime.now(
+        datetime.timezone(datetime.timedelta(hours=3))).date()) and (
+                     promo.active_until is None or promo.active_until >= datetime.datetime.now(
+                 datetime.timezone(datetime.timedelta(hours=3))).date())
+
+    if promo.active is not active:
+        promo.active = active
+
+        session.commit()
+        session.refresh(promo)
+
+    return active

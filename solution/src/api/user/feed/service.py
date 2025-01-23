@@ -13,20 +13,20 @@ Modifications made by Danila Sedelnikov on January 2025.
 from sqlalchemy import and_, or_, func
 
 from src.api.business.models import Promo
-from src.api.business.promo.service import get_category
+from src.api.business.promo.service import get_category, is_promo_is_active_on_cur_date
 from src.api.user.feed.schemas import PromoToUserSearchParams, PromoForUser
 from src.api.user.models import User
 from src.db.deps import Session
 
 
-def promo_to_response_for_user(promo: Promo, user: User) -> PromoForUser:
+def promo_to_response_for_user(promo: Promo, user: User, session: Session) -> PromoForUser:
     return PromoForUser(
         promo_id=str(promo.id),
         company_id=str(promo.business_id),
         company_name=promo.business.name,
         description=promo.description,
         image_url=str(promo.image_url) if promo.image_url is not None else None,
-        active=promo.active,
+        active=is_promo_is_active_on_cur_date(promo, session),
         is_activated_by_user=True if user in promo.user_activates else False,
         like_count=len(promo.user_likes),
         is_liked_by_user=True if user in promo.user_likes else False,
@@ -74,4 +74,4 @@ def get_promos_response_to_user_with_params(user: User, query: PromoToUserSearch
     if query.limit is not None:
         promos[::] = promos[:query.limit]
 
-    return [promo_to_response_for_user(promo, user) for promo in promos], total_count
+    return [promo_to_response_for_user(promo, user, session) for promo in promos], total_count
