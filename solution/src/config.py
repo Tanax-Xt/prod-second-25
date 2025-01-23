@@ -35,6 +35,9 @@ class Settings(BaseSettings):
 
     BUSINESS_SECRET_PREFIX: str = "b-secret"
     USER_SECRET_PREFIX: str = "u-secret"
+    ANTIFRAUD_SECRET_PREFIX: str = "antifraud-secret"
+
+    ANTIFRAUD_ADDRESS: str
 
     @computed_field
     @property

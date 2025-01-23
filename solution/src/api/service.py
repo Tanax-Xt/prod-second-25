@@ -26,29 +26,16 @@ def set_secret(id: str, secret: str, prefix: str):
     redis.set(name, secret, expires_at)
 
 
+def set_secret_with_timedelta(id: str, secret: str, prefix: str, timedelta: timedelta):
+    name = generate_code_cache_name(prefix, id)
+    redis.set(name, secret, timedelta)
+
+
 def get_secret(id: str, prefix: str) -> ResponseT:
     name = generate_code_cache_name(prefix, id)
     secret = redis.get(name)
 
     return secret
-
-
-# def expire_code(subject: KeyT) -> ResponseT:
-#     name = generate_code_cache_name(subject)
-#     response = redis.delete(name)
-#
-#     return response
-
-
-# def expire_code_if_correct(subject: KeyT, code: int) -> bool:
-#     is_correct = is_code_correct(subject, code)
-#     if is_correct:
-#         expire_code(subject)
-#     return is_correct
-
-
-# def is_code_correct(subject: KeyT, code: int) -> bool:
-#     return get_code(subject) == str(code).encode()
 
 
 def generate_code_cache_name(prefix: str, subject: str) -> KeyT:

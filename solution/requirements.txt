@@ -9,3 +9,4 @@ pydantic[email]==2.10.5
 redis==5.2.1
 pydantic_extra_types==2.10.2
 pycountry==24.6.1
+requests==2.32.3

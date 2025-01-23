@@ -76,6 +76,10 @@ def get_promo_by_id(promo_id: uuid.UUID, session: Session) -> Promo:
     return session.query(Promo).filter(Promo.id == promo_id).first()
 
 
+def get_active_subpromo_by_promo_id(promo_id: uuid.UUID, session: Session) -> list[SubPromo]:
+    return session.query(SubPromo).filter(((SubPromo.promo_id == promo_id) & (SubPromo.active == True))).all()
+
+
 def to_promo_create(promo: Promo) -> PromoCreate:
     return PromoCreate(
         description=promo.description,
@@ -103,7 +107,7 @@ def promo_to_response(promo: Promo, session: Session) -> PromoResponse:
         company_id=str(promo.business.id),
         company_name=promo.business.name,
         like_count=len(promo.user_likes),
-        used_count=promo.used_count,
+        used_count=len(promo.user_activates),
         active=is_promo_is_active_on_cur_date(promo, session)
     )
 
@@ -177,6 +181,9 @@ def is_validate_date(age_from: datetime.date, age_until: datetime.date) -> bool:
 
 
 def is_promo_is_active_on_cur_date(promo: Promo, session: Session) -> bool:
+    if promo.active is False:
+        return False
+
     active = (promo.active_from is None or promo.active_from <= datetime.datetime.now(
         datetime.timezone(datetime.timedelta(hours=3))).date()) and (
                      promo.active_until is None or promo.active_until >= datetime.datetime.now(

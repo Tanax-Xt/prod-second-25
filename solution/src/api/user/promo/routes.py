@@ -14,11 +14,12 @@ import uuid
 
 from fastapi import APIRouter, status, Header, HTTPException
 
-from src.api.business.promo.service import get_promo_by_id
+from src.api.business.promo.service import get_promo_by_id, is_promo_is_active_on_cur_date
 from src.api.user.auth.service import get_user_by_token
 from src.api.user.feed.schemas import PromoForUser
 from src.api.user.feed.service import promo_to_response_for_user
-from src.api.user.promo.services import add_like_to_promo_by_user, delete_like_to_promo_by_user
+from src.api.user.promo.services import add_like_to_promo_by_user, delete_like_to_promo_by_user, \
+    is_correct_antifraud_status, get_promo_var, is_user_fits_to_target
 from src.db.deps import Session
 
 promo_router = APIRouter(prefix="/promo/{id}")
@@ -59,12 +60,11 @@ async def add_like(id: uuid.UUID,
     return {"status": "ok"}
 
 
-
 @promo_router.delete("/like", status_code=status.HTTP_200_OK,
-                   response_model_exclude_none=True)
+                     response_model_exclude_none=True)
 async def delete_like(id: uuid.UUID,
-                   Authorization: str = Header(None),
-                   session: Session = Session):
+                      Authorization: str = Header(None),
+                      session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
@@ -76,3 +76,29 @@ async def delete_like(id: uuid.UUID,
 
     delete_like_to_promo_by_user(user, promo, session)
     return {"status": "ok"}
+
+
+@promo_router.post("/activate", status_code=status.HTTP_200_OK,
+                   response_model_exclude_none=True)
+async def activate_promo(id: uuid.UUID, Authorization: str = Header(None), session: Session = Session):
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    user = get_user_by_token(Authorization, session)
+    promo = get_promo_by_id(id, session)
+
+    if not is_promo_is_active_on_cur_date(promo, session):
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+
+    if not is_user_fits_to_target(user, promo):
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+
+    if not is_correct_antifraud_status(user, promo):
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+
+    user_promo_var = get_promo_var(user, promo, session)
+
+    if user_promo_var is None:
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+
+    return {"promo": user_promo_var}
