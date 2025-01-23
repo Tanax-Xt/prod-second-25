@@ -36,7 +36,7 @@ def create_comment(session: Session, promo: Promo, user: User, schema: CommentTe
 def date_to_RFC_3339(date: datetime.datetime) -> str:
     offset = date.strftime('%z')
     return date.strftime(
-        '%Y-%m-%dT%H:%M:%S') + 'Z' + f"{offset[:3] if len(offset) > 0 else '00'}:{offset[3:] if len(offset) > 0 else '00'}"
+        '%Y-%m-%dT%H:%M:%S') + 'Z' + f"{offset[:3]}{':' if len(offset) > 0 else ''}{offset[3:]}"
 
 
 def comment_to_response(comment: Comment) -> CommentResponse:
@@ -81,4 +81,4 @@ def get_comments_by_promo(promo: Promo, query: CommentsToUserSearchParams) -> (l
     if query.limit is not None:
         comments[::] = comments[:query.limit]
 
-    return comments, total_count
+    return [comment_to_response(comment) for comment in comments], total_count
