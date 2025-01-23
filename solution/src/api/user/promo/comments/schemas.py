@@ -10,9 +10,22 @@ Available at: https://github.com/quotepedia/api
 
 Modifications made by Danila Sedelnikov on January 2025.
 """
+from typing import Optional
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, constr, HttpUrl
+
+
+class Author(BaseModel):
+    name: constr(min_length=1, max_length=100)
+    surname: constr(min_length=1, max_length=120)
+    image_url: Optional[HttpUrl] = None
 
 
 class CommentText(BaseModel):
     text: constr(min_length=10, max_length=1000)
+
+
+class CommentResponse(CommentText):
+    id: constr(min_length=1, max_length=50)
+    date: constr()
+    author: Author
