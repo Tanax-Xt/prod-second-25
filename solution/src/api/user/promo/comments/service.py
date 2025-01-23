@@ -11,6 +11,7 @@ Available at: https://github.com/quotepedia/api
 Modifications made by Danila Sedelnikov on January 2025.
 """
 import datetime
+import uuid
 
 from src.api.business.models import Promo
 from src.api.user.models import User, Comment
@@ -49,3 +50,7 @@ def comment_to_response(comment: Comment) -> CommentResponse:
             image_url=str(comment.author.image_url) if comment.author.image_url is not None else None
         ),
     )
+
+
+def get_comment_by_id(id:uuid.UUID, promo: Promo, session: Session) -> Comment:
+    return session.query(Comment).filter(((Comment.id == id) & (Comment.promo_id == promo.id))).first()

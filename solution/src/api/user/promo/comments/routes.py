@@ -17,13 +17,14 @@ from fastapi import APIRouter, status, Header, HTTPException
 from src.api.business.promo.service import get_promo_by_id
 from src.api.user.auth.service import get_user_by_token
 from src.api.user.promo.comments.schemas import CommentText, CommentResponse
-from src.api.user.promo.comments.service import create_comment, comment_to_response
+from src.api.user.promo.comments.service import create_comment, comment_to_response, get_comment_by_id
 from src.db.deps import Session
 
 comments_router = APIRouter(prefix="/{id}/comments")
 
 
-@comments_router.post("", status_code=status.HTTP_200_OK, response_model=CommentResponse, response_model_exclude_none=True)
+@comments_router.post("", status_code=status.HTTP_200_OK, response_model=CommentResponse,
+                      response_model_exclude_none=True)
 async def add_comment(id: uuid.UUID,
                       schema: CommentText,
                       Authorization: str = Header(None),
@@ -44,22 +45,28 @@ async def add_comment(id: uuid.UUID,
     # if promo.business_id != business.id:
     #     raise HTTPException(status.HTTP_403_FORBIDDEN, "Промокод не принадлежит этой компании.")
 
-# @promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoForUser,
-#                   response_model_exclude_none=True)
-# async def promo_list(id: uuid.UUID,
-#                      Authorization: str = Header(None),
-#                      session: Session = Session):
-#     if not Authorization or not Authorization.startswith("Bearer "):
-#         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
-#
-#     user = get_user_by_token(Authorization, session)
-#     promo = get_promo_by_id(id, session)
-#
-#     if promo is None:
-#         raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
-#
-#     return promo_to_response_for_user(promo, user, session)
-#
+
+@comments_router.get("/{comment_id}", status_code=status.HTTP_200_OK, response_model=CommentResponse,
+                     response_model_exclude_none=True)
+async def get_comment(id: uuid.UUID,
+                      comment_id: uuid.UUID,
+                      Authorization: str = Header(None),
+                      session: Session = Session):
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    promo = get_promo_by_id(id, session)
+
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
+    comment = get_comment_by_id(comment_id, promo, session)
+
+    if comment is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Комментарий не найден.")
+
+    return comment_to_response(comment)
+
 #
 # @promo_router.post("/{id}/like", status_code=status.HTTP_200_OK,
 #                    response_model_exclude_none=True)

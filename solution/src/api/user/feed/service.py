@@ -30,8 +30,7 @@ def promo_to_response_for_user(promo: Promo, user: User, session: Session) -> Pr
         is_activated_by_user=True if user in promo.user_activates else False,
         like_count=len(promo.user_likes),
         is_liked_by_user=True if user in promo.user_likes else False,
-        #     TODO убрать заглушку
-        comment_count=0
+        comment_count=len(promo.comments)
     )
 
 
