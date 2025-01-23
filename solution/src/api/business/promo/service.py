@@ -59,7 +59,7 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
         promos = []
         for uniq in schema.promo_unique:
             promos.append(SubPromo(promo_common=uniq, promo=promo))
-        promo.promo_unique = promos
+        promo.promo_unique = set(promos)
     else:
         if schema.promo_common is None or schema.promo_unique is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
