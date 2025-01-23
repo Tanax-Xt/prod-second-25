@@ -40,11 +40,11 @@ class Target(BaseModel):
     country: Optional[str] = None
     categories: Optional[List[constr(min_length=2, max_length=20)]] = None
 
-    @validator('categories')
-    def lowercase_categories(cls, v):
-        if v is not None:
-            return [category.lower() for category in v]
-        return v
+    # @validator('categories')
+    # def lowercase_categories(cls, v):
+    #     if v is not None:
+    #         return [category.lower() for category in v]
+    #     return v
 
     @validator('country')
     def lowercase_country(cls, v):

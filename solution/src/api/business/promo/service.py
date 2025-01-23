@@ -15,6 +15,7 @@ import datetime
 import uuid
 
 from fastapi import HTTPException, status
+from sqlalchemy import func
 
 from src.api.business.models import Business, Promo, SubPromo, PromoCategory
 from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams, \
@@ -23,8 +24,8 @@ from src.db.deps import Session
 
 
 def get_category(category_name: str, session: Session) -> PromoCategory:
-    category_name = category_name.lower()
-    category = session.query(PromoCategory).filter(PromoCategory.name == category_name).first()
+    category_name = category_name
+    category = session.query(PromoCategory).filter(func.lower(PromoCategory.name) == func.lower(category_name)).first()
     if category is None:
         category = PromoCategory(name=category_name)
         session.add(category)
@@ -144,7 +145,13 @@ def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
             promo.categories.clear()
 
             for subparam in schema.target.dict(exclude_unset=True):
-                setattr(promo, subparam, getattr(schema.target, subparam))
+                if subparam == "categories":
+                    for category in schema.target.categories:
+                        promo.categories.append(get_category(category, session))
+                else:
+                    setattr(promo, subparam, getattr(schema.target, subparam))
+        elif param == "image_url":
+            setattr(promo, param, str(getattr(schema, param)))
         else:
             setattr(promo, param, getattr(schema, param))
 
