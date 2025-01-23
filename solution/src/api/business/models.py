@@ -82,7 +82,7 @@ class Promo(Base, AuditMixin):
 
     categories: Mapped[Optional[list["PromoCategory"]]] = relationship(back_populates="promos",
                                                                        secondary="promo_to_category")
-    promo_unique: Mapped[Optional[list["SubPromo"]]] = relationship(back_populates="promo")
+    promo_unique: Mapped[Optional[set["SubPromo"]]] = relationship(back_populates="promo")
 
     business_id: Mapped[str] = mapped_column(ForeignKey("business.id", ondelete="SET NULL"), default=None)
     business: Mapped["Business"] = relationship(back_populates="promos")

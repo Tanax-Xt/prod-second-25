@@ -21,10 +21,10 @@ from src.api.user.feed.service import promo_to_response_for_user
 from src.api.user.promo.services import add_like_to_promo_by_user, delete_like_to_promo_by_user
 from src.db.deps import Session
 
-promo_router = APIRouter(prefix="/promo")
+promo_router = APIRouter(prefix="/promo/{id}")
 
 
-@promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoForUser,
+@promo_router.get("", status_code=status.HTTP_200_OK, response_model=PromoForUser,
                   response_model_exclude_none=True)
 async def promo_list(id: uuid.UUID,
                      Authorization: str = Header(None),
@@ -41,7 +41,7 @@ async def promo_list(id: uuid.UUID,
     return promo_to_response_for_user(promo, user, session)
 
 
-@promo_router.post("/{id}/like", status_code=status.HTTP_200_OK,
+@promo_router.post("/like", status_code=status.HTTP_200_OK,
                    response_model_exclude_none=True)
 async def add_like(id: uuid.UUID,
                    Authorization: str = Header(None),
@@ -60,7 +60,7 @@ async def add_like(id: uuid.UUID,
 
 
 
-@promo_router.delete("/{id}/like", status_code=status.HTTP_200_OK,
+@promo_router.delete("/like", status_code=status.HTTP_200_OK,
                    response_model_exclude_none=True)
 async def delete_like(id: uuid.UUID,
                    Authorization: str = Header(None),
