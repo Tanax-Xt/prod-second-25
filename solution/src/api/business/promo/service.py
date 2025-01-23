@@ -54,7 +54,7 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
             promo.categories.append(category)
 
     if schema.mode == "UNIQUE":
-        if schema.promo_common is not None or schema.promo_unique is None:
+        if schema.promo_common is not None or schema.promo_unique is None or schema.max_count != 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         promos = []
         for uniq in schema.promo_unique:
@@ -137,6 +137,9 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
 
 
 def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
+    if promo.mode == "UNIQUE" != 1:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
     for param in schema.dict(exclude_unset=True):
         if param == "target":
             promo.age_from = None
@@ -158,3 +161,15 @@ def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
     session.commit()
     session.refresh(promo)
     return promo
+
+
+def is_validate_age(age_from: int, age_until: int) -> bool:
+    if age_from is not None and age_until is not None:
+        return age_from <= age_until
+    return True
+
+
+def is_validate_date(age_from: datetime.date, age_until: datetime.date) -> bool:
+    if age_from is not None and age_until is not None:
+        return age_from <= age_until
+    return True

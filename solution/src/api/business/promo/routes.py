@@ -18,7 +18,7 @@ from fastapi import APIRouter, status, Header, HTTPException, Response, Depends
 from src.api.business.auth.service import get_business_by_token
 from src.api.business.promo.schemas import PromoCreate, PromoResponse, PromosListSearchParams, PromoPatch
 from src.api.business.promo.service import create_promo, get_promo_by_id, promo_to_response, \
-    get_promos_response_by_business_with_params, update_promo
+    get_promos_response_by_business_with_params, update_promo, is_validate_age, is_validate_date
 from src.db.deps import Session
 
 promo_router = APIRouter(prefix="/promo")
@@ -28,6 +28,12 @@ promo_router = APIRouter(prefix="/promo")
 async def promo(promo: PromoCreate, Authorization: str = Header(None), session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    if promo.target is not None and not is_validate_age(promo.target.age_from, promo.target.age_until):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
+    if promo.target is not None and not is_validate_date(promo.active_from, promo.active_until):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
     business = get_business_by_token(Authorization, session)
     promo = create_promo(session, promo, business)
@@ -72,6 +78,12 @@ async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = He
                       session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    if schema.target is not None and not is_validate_age(schema.target.age_from, schema.target.age_until):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
+    if schema.target is not None and not is_validate_date(schema.active_from, schema.active_until):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
     business = get_business_by_token(Authorization, session)
     promo = get_promo_by_id(id, session)
