@@ -24,7 +24,7 @@ feed_router = APIRouter(prefix="/feed")
 @feed_router.get("", status_code=status.HTTP_200_OK, response_model=list[PromoForUser],
                  response_model_exclude_none=True)
 async def promo_list(response: Response, query: PromoToUserSearchParams = Depends(PromoToUserSearchParams),
-                     Authorization: str = Header(),
+                     Authorization: str = Header(None),
                      session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")

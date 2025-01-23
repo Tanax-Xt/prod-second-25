@@ -25,7 +25,7 @@ promo_router = APIRouter(prefix="/promo")
 
 
 @promo_router.post("", status_code=status.HTTP_201_CREATED)
-async def promo(promo: PromoCreate, Authorization: str = Header(), session: Session = Session):
+async def promo(promo: PromoCreate, Authorization: str = Header(None), session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
@@ -37,7 +37,7 @@ async def promo(promo: PromoCreate, Authorization: str = Header(), session: Sess
 @promo_router.get("", status_code=status.HTTP_200_OK, response_model=list[PromoResponse],
                   response_model_exclude_none=True)
 async def promo_list(response: Response, query: PromosListSearchParams = Depends(PromosListSearchParams),
-                     Authorization: str = Header(),
+                     Authorization: str = Header(None),
                      session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
@@ -50,7 +50,7 @@ async def promo_list(response: Response, query: PromosListSearchParams = Depends
 
 @promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse,
                   response_model_exclude_none=True)
-async def get_promo(id: uuid.UUID, Authorization: str = Header(), session: Session = Session) -> PromoResponse:
+async def get_promo(id: uuid.UUID, Authorization: str = Header(None), session: Session = Session) -> PromoResponse:
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
@@ -68,7 +68,7 @@ async def get_promo(id: uuid.UUID, Authorization: str = Header(), session: Sessi
 
 @promo_router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=PromoResponse,
                     response_model_exclude_none=True)
-async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = Header(),
+async def patch_promo(id: uuid.UUID, schema: PromoPatch, Authorization: str = Header(None),
                       session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")

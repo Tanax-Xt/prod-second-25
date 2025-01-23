@@ -26,7 +26,7 @@ promo_router = APIRouter(prefix="/promo")
 @promo_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=PromoForUser,
                   response_model_exclude_none=True)
 async def promo_list(id: uuid.UUID,
-                     Authorization: str = Header(),
+                     Authorization: str = Header(None),
                      session: Session = Session):
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")

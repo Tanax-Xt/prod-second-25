@@ -24,7 +24,7 @@ profile_router = APIRouter(prefix="/profile")
 
 @profile_router.get("", status_code=status.HTTP_200_OK, response_model=UserResponse,
                     response_model_exclude_none=True)
-def get_profile(Authorization: str = Header(), session: Session = Session) -> UserResponse:
+def get_profile(Authorization: str = Header(None), session: Session = Session) -> UserResponse:
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
@@ -35,7 +35,7 @@ def get_profile(Authorization: str = Header(), session: Session = Session) -> Us
 
 @profile_router.patch("", status_code=status.HTTP_200_OK, response_model=UserResponse,
                       response_model_exclude_none=True)
-def patch_profile(user_patch: UserPatch, Authorization: str = Header(), session: Session = Session) -> UserResponse:
+def patch_profile(user_patch: UserPatch, Authorization: str = Header(None), session: Session = Session) -> UserResponse:
     if not Authorization or not Authorization.startswith("Bearer "):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
 
