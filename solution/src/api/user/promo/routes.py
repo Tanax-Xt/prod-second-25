@@ -18,6 +18,7 @@ from src.api.business.promo.service import get_promo_by_id
 from src.api.user.auth.service import get_user_by_token
 from src.api.user.feed.schemas import PromoForUser
 from src.api.user.feed.service import promo_to_response_for_user
+from src.api.user.promo.services import add_like_to_promo_by_user, delete_like_to_promo_by_user
 from src.db.deps import Session
 
 promo_router = APIRouter(prefix="/promo")
@@ -38,3 +39,40 @@ async def promo_list(id: uuid.UUID,
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
 
     return promo_to_response_for_user(promo, user)
+
+
+@promo_router.post("/{id}/like", status_code=status.HTTP_200_OK,
+                   response_model_exclude_none=True)
+async def add_like(id: uuid.UUID,
+                   Authorization: str = Header(None),
+                   session: Session = Session):
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    user = get_user_by_token(Authorization, session)
+    promo = get_promo_by_id(id, session)
+
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
+    add_like_to_promo_by_user(user, promo, session)
+    return {"status": "ok"}
+
+
+
+@promo_router.delete("/{id}/like", status_code=status.HTTP_200_OK,
+                   response_model_exclude_none=True)
+async def delete_like(id: uuid.UUID,
+                   Authorization: str = Header(None),
+                   session: Session = Session):
+    if not Authorization or not Authorization.startswith("Bearer "):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or missing Authorization header")
+
+    user = get_user_by_token(Authorization, session)
+    promo = get_promo_by_id(id, session)
+
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
+    delete_like_to_promo_by_user(user, promo, session)
+    return {"status": "ok"}

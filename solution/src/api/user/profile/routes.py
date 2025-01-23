@@ -43,3 +43,5 @@ def patch_profile(user_patch: UserPatch, Authorization: str = Header(None), sess
     user = update_user(user, user_patch, session)
 
     return user_to_response(user)
+
+
