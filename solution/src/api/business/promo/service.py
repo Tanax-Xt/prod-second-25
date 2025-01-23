@@ -124,7 +124,7 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
         elif params.sort_by == "active_until":
             promos.sort(key=lambda p: p.active_until if p.active_until is not None else datetime.date.max, reverse=True)
     else:
-        promos.reverse()
+        promos.sort(key=lambda p: p.created_at, reverse=True)
 
     total_count = len(promos)
 

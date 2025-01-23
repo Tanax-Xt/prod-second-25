@@ -19,10 +19,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.db.mixin import AuditMixin
 from src.db.models import Base
 
 if TYPE_CHECKING:
-    from src.api.user.models import User
+    from src.api.user.models import User, Comment
 
 
 class Business(Base):
@@ -59,12 +60,13 @@ class PromoLikeToUser(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
     promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
 
+
 class PromoActivateToUser(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
     promo_id: Mapped[str] = mapped_column(ForeignKey("promo.id", ondelete="CASCADE"), primary_key=True)
 
 
-class Promo(Base):
+class Promo(Base, AuditMixin):
     id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     description: Mapped[str] = mapped_column()
     image_url: Mapped[Optional[str]] = mapped_column()
@@ -89,5 +91,7 @@ class Promo(Base):
                                                              secondary="promo_like_to_user")
 
     user_activates: Mapped[Optional[set["User"]]] = relationship(back_populates="promo_activates",
-                                                             secondary="promo_activate_to_user")
+                                                                 secondary="promo_activate_to_user")
     used_count: Mapped[int] = mapped_column(default=0)
+
+    comments: Mapped[Optional[list["Comment"]]] = relationship(back_populates="promo")
