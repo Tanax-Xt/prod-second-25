@@ -12,7 +12,12 @@ Modifications made by Danila Sedelnikov on January 2025.
 """
 from typing import Optional
 
-from pydantic import BaseModel, constr, HttpUrl
+from pydantic import BaseModel, constr, HttpUrl, conint
+
+
+class CommentsToUserSearchParams(BaseModel):
+    limit: Optional[conint(ge=0)] = 10
+    offset: Optional[conint(ge=0)] = None
 
 
 class Author(BaseModel):

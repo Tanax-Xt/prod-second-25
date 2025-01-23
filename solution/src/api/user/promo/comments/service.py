@@ -15,7 +15,7 @@ import uuid
 
 from src.api.business.models import Promo
 from src.api.user.models import User, Comment
-from src.api.user.promo.comments.schemas import CommentText, CommentResponse, Author
+from src.api.user.promo.comments.schemas import CommentText, CommentResponse, Author, CommentsToUserSearchParams
 from src.db.deps import Session
 
 
@@ -61,8 +61,24 @@ def delete_comment(comment: Comment, session: Session):
     session.commit()
 
 
-def update_comment(comment: Comment, schema: CommentText, session: Session):
+def update_comment(comment: Comment, schema: CommentText, session: Session) -> Comment:
     comment.text = schema.text
     session.commit()
     session.refresh(comment)
     return comment
+
+
+def get_comments_by_promo(promo: Promo, query: CommentsToUserSearchParams) -> (list[CommentResponse], int):
+    comments = list(promo.comments)
+
+    comments.sort(key=lambda c: c.created_at, reverse=True)
+
+    total_count = len(comments)
+
+    if query.offset is not None:
+        comments[::] = comments[query.offset:]
+
+    if query.limit is not None:
+        comments[::] = comments[:query.limit]
+
+    return comments, total_count
