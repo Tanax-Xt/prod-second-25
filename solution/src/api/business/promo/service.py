@@ -91,7 +91,7 @@ def to_promo_create(promo: Promo) -> PromoCreate:
         active_until=promo.active_until,
         mode=PromoEnum(promo.mode),
         promo_common=promo.promo_common,
-        promo_unique=set([sp.promo_common for sp in promo.promo_unique]) if promo.promo_unique else None
+        promo_unique=[sp.promo_common for sp in promo.promo_unique] if promo.promo_unique else None
     )
 
 
