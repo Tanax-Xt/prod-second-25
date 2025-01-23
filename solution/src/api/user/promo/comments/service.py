@@ -52,5 +52,11 @@ def comment_to_response(comment: Comment) -> CommentResponse:
     )
 
 
-def get_comment_by_id(id:uuid.UUID, promo: Promo, session: Session) -> Comment:
+def get_comment_by_id(id: uuid.UUID, promo: Promo, session: Session) -> Comment:
     return session.query(Comment).filter(((Comment.id == id) & (Comment.promo_id == promo.id))).first()
+
+
+def delete_comment(comment: Comment, session: Session):
+    session.delete(comment)
+    session.commit()
+

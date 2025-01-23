@@ -41,7 +41,7 @@ class User(Base):
     promo_activates: Mapped[Optional[set["Promo"]]] = relationship(back_populates="user_activates",
                                                                    secondary="promo_activate_to_user")
 
-    comments: Mapped[Optional[list["Comment"]]] = relationship(back_populates="author")
+    comments: Mapped[Optional[set["Comment"]]] = relationship(back_populates="author")
 
 
 class Comment(Base, AuditMixin):

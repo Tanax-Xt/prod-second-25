@@ -94,4 +94,4 @@ class Promo(Base, AuditMixin):
                                                                  secondary="promo_activate_to_user")
     used_count: Mapped[int] = mapped_column(default=0)
 
-    comments: Mapped[Optional[list["Comment"]]] = relationship(back_populates="promo")
+    comments: Mapped[Optional[set["Comment"]]] = relationship(back_populates="promo")
