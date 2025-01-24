@@ -16,8 +16,8 @@ from pydantic import BaseModel, constr, HttpUrl, conint
 
 
 class CommentsToUserSearchParams(BaseModel):
-    limit: Optional[conint(ge=0, strict=True)] = 10
-    offset: Optional[conint(ge=0, strict=True)] = None
+    limit: Optional[conint(ge=0)] = 10
+    offset: Optional[conint(ge=0)] = None
 
 
 class Author(BaseModel):

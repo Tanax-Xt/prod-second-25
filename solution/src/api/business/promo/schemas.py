@@ -76,8 +76,8 @@ class PromoResponse(PromoCreate):
 
 
 class PromosListSearchParams(BaseModel):
-    limit: Optional[conint(ge=0, strict=True)] = 10
-    offset: Optional[conint(ge=0, strict=True)] = None
+    limit: Optional[conint(ge=0)] = 10
+    offset: Optional[conint(ge=0)] = None
     sort_by: Optional[Literal["active_from", "active_until"]] = None
     country: Optional[List[CountryAlpha2]] = Depends(parse_list_query)
 
