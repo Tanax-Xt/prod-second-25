@@ -17,9 +17,9 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy import func
 
-from src.api.business.models import Business, Promo, SubPromo, PromoCategory
+from src.api.business.models import Business, Promo, SubPromo, PromoCategory, PromoActivateToUser
 from src.api.business.promo.schemas import PromoCreate, PromoResponse, Target, PromoEnum, PromosListSearchParams, \
-    PromoPatch
+    PromoPatch, PromoStat, CountryStat
 from src.db.deps import Session
 
 
@@ -196,3 +196,27 @@ def is_promo_is_active_on_cur_date(promo: Promo, session: Session) -> bool:
         session.refresh(promo)
 
     return active
+
+
+def get_stat_for_promo(promo: Promo, session: Session) -> PromoStat:
+    stat = PromoStat()
+
+    activations = session.query(PromoActivateToUser).filter(PromoActivateToUser.promo_id == promo.id)
+    stat.activations_count = activations.count()
+
+    countries = {}
+
+    for user in promo.user_activates:
+        c = user.country.lower()
+        if c in countries:
+            countries[c] += activations.filter(PromoActivateToUser.user_id == user.id).count()
+        else:
+            countries[c] = activations.filter(PromoActivateToUser.user_id == user.id).count()
+
+    if len(countries) > 0:
+        stat.countries = []
+
+    for country in sorted(countries.keys()):
+        stat.countries.append(CountryStat(country=country, activations_count=countries[country]))
+
+    return stat

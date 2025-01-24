@@ -98,3 +98,13 @@ class PromosListSearchParams(BaseModel):
         if v is not None:
             return [category.lower() for category in v]
         return v
+
+
+class CountryStat(BaseModel):
+    country: str
+    activations_count: conint(ge=1)
+
+
+class PromoStat(BaseModel):
+    activations_count: Optional[conint(ge=0)] = 0
+    countries: Optional[list[CountryStat]] = None
