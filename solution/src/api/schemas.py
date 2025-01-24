@@ -19,13 +19,13 @@ from pydantic import constr, BaseModel, conint, validator
 
 
 class Age(BaseModel):
-    age: conint(ge=0, le=100)
+    age: conint(ge=0, le=100, strict=True)
 
-    @validator('age', pre=True)
-    def test_age(cls, v):
-        if type(v) is not int:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST)
-        return v
+    # @validator('age', pre=True)
+    # def test_age(cls, v):
+    #     if type(v) is not int:
+    #         raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    #     return v
 
 
 class Email(BaseModel):

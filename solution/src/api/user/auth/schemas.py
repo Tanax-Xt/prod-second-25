@@ -21,7 +21,7 @@ from src.api.business.promo.deps import Country
 from src.api.schemas import Email, Password, Age
 
 
-class UserTargetSettings(Age, BaseModel):
+class UserTargetSettings(Age):
     country: CountryAlpha2
 
     @validator('country')

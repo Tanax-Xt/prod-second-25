@@ -23,8 +23,8 @@ from src.api.business.promo.deps import parse_list_query, Country
 
 
 class Target(BaseModel):
-    age_from: Optional[conint(ge=0, le=100)] = None
-    age_until: Optional[conint(ge=0, le=100)] = None
+    age_from: Optional[conint(ge=0, le=100, strict=True)] = None
+    age_until: Optional[conint(ge=0, le=100, strict=True)] = None
     country: Optional[str] = None
     categories: Optional[List[constr(min_length=2, max_length=20)]] = None
 
@@ -39,17 +39,17 @@ class Target(BaseModel):
         else:
             return None
 
-    @validator('age_from', pre=True)
-    def test_age(cls, v):
-        if type(v) is not int and v is not None:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST)
-        return v
-
-    @validator('age_until', pre=True)
-    def test_age(cls, v):
-        if type(v) is not int and v is not None:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST)
-        return v
+    # @validator('age_from', pre=True)
+    # def test_age(cls, v):
+    #     if type(v) is not int and v is not None:
+    #         raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    #     return v
+    #
+    # @validator('age_until', pre=True)
+    # def test_age(cls, v):
+    #     if type(v) is not int and v is not None:
+    #         raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    #     return v
 
 
 class PromoPatch(BaseModel):
