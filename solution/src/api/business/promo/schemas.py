@@ -59,13 +59,13 @@ class Target(BaseModel):
 
     @validator('age_from', pre=True)
     def test_age(cls, v):
-        if type(v) is not int:
+        if type(v) is not int and v is not None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST)
         return v
 
     @validator('age_until', pre=True)
     def test_age(cls, v):
-        if type(v) is not int:
+        if type(v) is not int and v is not None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST)
         return v
 
