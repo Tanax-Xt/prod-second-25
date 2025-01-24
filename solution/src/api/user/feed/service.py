@@ -20,7 +20,6 @@ from src.db.deps import Session
 
 
 def promo_to_response_for_user(promo: Promo, user: User, session: Session) -> PromoForUser:
-    x = promo.user_activates
     return PromoForUser(
         promo_id=str(promo.id),
         company_id=str(promo.business_id),

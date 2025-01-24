@@ -15,12 +15,13 @@ import json
 from datetime import datetime
 
 import requests
-from sqlalchemy import func
+from sqlalchemy import func, desc
 
-from src.api.business.models import Promo
-from src.api.business.promo.service import get_active_subpromo_by_promo_id
+from src.api.business.models import Promo, PromoActivateToUser
+from src.api.business.promo.service import get_active_subpromo_by_promo_id, get_promo_by_id
 from src.api.service import get_secret, set_secret_with_timedelta
 from src.api.user.models import User
+from src.api.user.promo.comments.schemas import CommentsToUserSearchParams
 from src.config import settings
 from src.db.deps import Session
 
@@ -113,3 +114,19 @@ def get_promo_var(user: User, promo: Promo, session: Session) -> str | None:
         session.commit()
         session.refresh(subpromo)
         return subpromo.promo_common
+
+
+def get_user_activations_history(user: User, session: Session, query: CommentsToUserSearchParams) -> (list[Promo], int):
+    promos = session.query(PromoActivateToUser).filter(PromoActivateToUser.user_id == user.id).order_by(
+        desc(PromoActivateToUser.created_at))
+
+    total_count = len(promos.all())
+
+    promos = promos.limit(query.limit)
+
+    if query.offset is not None:
+        promos = promos.offset(query.offset)
+
+    promos = [get_promo_by_id(promo.promo_id, session) for promo in promos.all()]
+
+    return promos, total_count

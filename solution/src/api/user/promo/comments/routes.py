@@ -21,7 +21,7 @@ from src.api.user.promo.comments.service import create_comment, comment_to_respo
     update_comment, get_comments_by_promo
 from src.db.deps import Session
 
-comments_router = APIRouter(prefix="/comments")
+comments_router = APIRouter(prefix="/{id}/comments")
 
 
 @comments_router.post("", status_code=status.HTTP_200_OK, response_model=CommentResponse,
