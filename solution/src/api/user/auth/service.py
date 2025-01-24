@@ -41,7 +41,7 @@ def create_user(session: Session, schema: UserCreate) -> User:
         password=get_password_hash(schema.password),
         name=schema.name,
         surname=schema.surname,
-        image_url=str(schema.image_url) if schema.image_url is not None else None,
+        avatar_url=str(schema.avatar_url) if schema.avatar_url is not None else None,
         age=schema.other.age,
         country=schema.other.country
     )

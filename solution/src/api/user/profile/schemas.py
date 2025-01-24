@@ -29,7 +29,7 @@ class UserResponse(Email):
 class UserPatch(BaseModel):
     name: Optional[constr(min_length=1, max_length=100)] = None
     surname: Optional[constr(min_length=1, max_length=120)] = None
-    image_url: Optional[HttpUrl] = None
+    avatar_url: Optional[HttpUrl] = None
     password: Optional[constr(min_length=8, max_length=60)] = None
 
     @validator('password')

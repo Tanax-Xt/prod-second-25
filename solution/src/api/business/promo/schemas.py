@@ -31,7 +31,7 @@ from src.api.business.promo.deps import parse_list_query, Country
 
 
 # class PromoImageURL(BaseModel):
-#     image_url: Optional[HttpUrl] = None
+#     avatar_url: Optional[HttpUrl] = None
 
 
 class Target(BaseModel):

@@ -158,7 +158,7 @@ def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
                         promo.categories.append(get_category(category, session))
                 else:
                     setattr(promo, subparam, getattr(schema.target, subparam))
-        elif param == "image_url":
+        elif param == "avatar_url":
             setattr(promo, param, str(getattr(schema, param)))
         else:
             setattr(promo, param, getattr(schema, param))
