@@ -142,8 +142,18 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
 
 
 def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
-    if promo.mode == "UNIQUE" != 1:
+    if promo.mode == "UNIQUE" and schema.max_count != 1:
         raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
+    if promo.mode == "COMMON" and schema.max_count < promo.used_count:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
+    if promo.mode == "COMMON" and schema.max_count == promo.used_count and promo.active:
+        promo.active = False
+
+    if promo.mode == "COMMON" and schema.max_count >= promo.used_count and not promo.active:
+        promo.active = True
+
 
     for param in schema.dict(exclude_unset=True):
         if param == "target":
