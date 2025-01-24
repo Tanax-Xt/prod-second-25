@@ -17,8 +17,8 @@ from pydantic import BaseModel, constr, conint, validator, HttpUrl
 
 
 class PromoToUserSearchParams(BaseModel):
-    limit: Optional[conint(ge=0)] = 10
-    offset: Optional[conint(ge=0)] = None
+    limit: Optional[conint(ge=0, strict=True)] = 10
+    offset: Optional[conint(ge=0, strict=True)] = None
     active: Optional[bool] = None
 
     category: Optional[constr(min_length=2, max_length=20)] = None
