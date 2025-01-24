@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
       - redis
+      - antifraud
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
 
@@ -33,6 +34,21 @@ services:
     image: redis:latest
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
+
+  antifraud:
+    image: lodthe/prod-backend-antifraud:latest
+    environment:
+      - SERVER_PORT=9090
+      - CACHE_DURATION_MS=5000
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 512M
+    platform: linux/amd64
+
 
 volumes:
   postgres_data:
