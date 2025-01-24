@@ -30,7 +30,7 @@ def user_to_response(user: User) -> UserResponse:
         name=user.name,
         surname=user.surname,
         email=user.email,
-        image_url=user.image_url,
+        image_url=user.avatar_url,
         other=get_user_target_response(user)
     )
 

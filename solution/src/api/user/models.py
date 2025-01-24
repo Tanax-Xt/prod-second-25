@@ -31,7 +31,7 @@ class User(Base):
     password: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column()
     surname: Mapped[str] = mapped_column()
-    image_url: Mapped[Optional[str]] = mapped_column()
+    avatar_url: Mapped[Optional[str]] = mapped_column()
     age: Mapped[int] = mapped_column()
     country: Mapped[str] = mapped_column()
 
