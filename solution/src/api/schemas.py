@@ -13,7 +13,19 @@ Modifications made by Danila Sedelnikov on January 2025.
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field, constr, validator
+from fastapi import HTTPException, status
+from pydantic import EmailStr, Field
+from pydantic import constr, BaseModel, conint, validator
+
+
+class Age(BaseModel):
+    age: conint(ge=0, le=100)
+
+    @validator('age', pre=True)
+    def test_age(cls, v):
+        if type(v) is not int:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        return v
 
 
 class Email(BaseModel):

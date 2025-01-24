@@ -57,6 +57,18 @@ class Target(BaseModel):
         else:
             return None
 
+    @validator('age_from', pre=True)
+    def test_age(cls, v):
+        if type(v) is not int:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        return v
+
+    @validator('age_until', pre=True)
+    def test_age(cls, v):
+        if type(v) is not int:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        return v
+
 
 class PromoPatch(BaseModel):
     description: Optional[constr(min_length=10, max_length=300)] = None

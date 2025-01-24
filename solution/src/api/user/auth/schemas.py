@@ -14,26 +14,15 @@ Modifications made by Danila Sedelnikov on January 2025.
 from typing import Optional
 
 from fastapi import HTTPException, status
-from pydantic import constr, HttpUrl, BaseModel, conint, validator
+from pydantic import constr, HttpUrl, BaseModel, validator
 from pydantic_extra_types.country import CountryAlpha2
 
 from src.api.business.promo.deps import Country
-from src.api.schemas import Email, Password
+from src.api.schemas import Email, Password, Age
 
 
-class UserTargetSettings(BaseModel):
-    age: conint(ge=0, le=100)
+class UserTargetSettings(Age, BaseModel):
     country: CountryAlpha2
-
-    # @validator('country')
-    # def lowercase_country(cls, v):
-    #     return v.lower() if v is not None else None
-
-    @validator('age', pre=True)
-    def test_age(cls, v):
-        if type(v) is not int:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST)
-        return v
 
     @validator('country')
     def lowercase_country(cls, v):
