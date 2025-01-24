@@ -124,7 +124,7 @@ def get_promos_response_by_business_with_params(business: Business, params: Prom
 
     if params.sort_by is not None:
         if params.sort_by == "active_from":
-            promos.sort(key=lambda p: p.active_from if p.active_from is not None else datetime.date.max, reverse=True)
+            promos.sort(key=lambda p: p.active_from if p.active_from is not None else datetime.date.min, reverse=True)
         elif params.sort_by == "active_until":
             promos.sort(key=lambda p: p.active_until if p.active_until is not None else datetime.date.max, reverse=True)
     else:
