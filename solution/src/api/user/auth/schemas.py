@@ -29,6 +29,12 @@ class UserTargetSettings(BaseModel):
     # def lowercase_country(cls, v):
     #     return v.lower() if v is not None else None
 
+    @validator('age', pre=True)
+    def test_age(cls, v):
+        if type(v) is not int:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        return v
+
     @validator('country')
     def lowercase_country(cls, v):
         if v is not None:
