@@ -23,7 +23,7 @@ class CommentsToUserSearchParams(BaseModel):
 class Author(BaseModel):
     name: constr(min_length=1, max_length=100)
     surname: constr(min_length=1, max_length=120)
-    image_url: Optional[HttpUrl] = None
+    avatar_url: Optional[HttpUrl] = None
 
 
 class CommentText(BaseModel):

@@ -47,7 +47,7 @@ def comment_to_response(comment: Comment) -> CommentResponse:
         author=Author(
             name=comment.author.name,
             surname=comment.author.surname,
-            image_url=str(comment.author.image_url) if comment.author.image_url is not None else None
+            avatar_url=str(comment.author.avatar_url) if comment.author.avatar_url is not None else None
         ),
     )
 

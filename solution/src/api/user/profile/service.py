@@ -30,7 +30,7 @@ def user_to_response(user: User) -> UserResponse:
         name=user.name,
         surname=user.surname,
         email=user.email,
-        image_url=user.avatar_url,
+        avatar_url=user.avatar_url,
         other=get_user_target_response(user)
     )
 
@@ -40,7 +40,10 @@ def update_user(user: User, schema: UserPatch, session: Session) -> User:
         if param == "password":
             setattr(user, param, get_password_hash(getattr(schema, param)))
         else:
-            setattr(user, param, getattr(schema, param))
+            if param == "avatar_url":
+                setattr(user, param, str(getattr(schema, param)))
+            else:
+                setattr(user, param, getattr(schema, param))
 
     session.commit()
     session.refresh(user)

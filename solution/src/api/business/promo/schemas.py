@@ -22,29 +22,11 @@ from pydantic_extra_types.country import CountryAlpha2
 from src.api.business.promo.deps import parse_list_query, Country
 
 
-# class Country(BaseModel):
-#     country: CountryAlpha2
-
-
-# class PromoDescription(BaseModel):
-#     description: constr(min_length=10, max_length=300)
-
-
-# class PromoImageURL(BaseModel):
-#     avatar_url: Optional[HttpUrl] = None
-
-
 class Target(BaseModel):
     age_from: Optional[conint(ge=0, le=100)] = None
     age_until: Optional[conint(ge=0, le=100)] = None
     country: Optional[str] = None
     categories: Optional[List[constr(min_length=2, max_length=20)]] = None
-
-    # @validator('categories')
-    # def lowercase_categories(cls, v):
-    #     if v is not None:
-    #         return [category.lower() for category in v]
-    #     return v
 
     @validator('country')
     def lowercase_country(cls, v):
