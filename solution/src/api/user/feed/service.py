@@ -63,7 +63,7 @@ def get_promos_response_to_user_with_params(user: User, query: PromoToUserSearch
         promos = promos.filter(Promo.active == query.active)
 
     promos = promos.all()
-    promos.sort(lambda p: p.created_at, reverse=True)
+    promos.sort(key=lambda p: p.created_at, reverse=True)
 
     total_count = len(promos)
 
