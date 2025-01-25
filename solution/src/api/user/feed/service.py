@@ -57,12 +57,18 @@ def get_promos_response_to_user_with_params(user: User, query: PromoToUserSearch
 
     if query.category is not None:
         user_category = get_category(query.category, session)
-        promos.filter(Promo in user_category.promos)
-
-    if query.active is not None:
-        promos = promos.filter(Promo.active == query.active)
+        promos_cat = [promo.id for promo in user_category.promos]
+        promos = promos.filter(Promo.id.in_(promos_cat))
 
     promos = promos.all()
+
+    if query.active is not None:
+        all_promos = [promo for promo in promos]
+        promos = []
+        for promo in all_promos:
+            if is_promo_is_active_on_cur_date(promo, session) is query.active:
+                promos.append(promo)
+
     promos.sort(key=lambda p: p.created_at, reverse=True)
 
     total_count = len(promos)

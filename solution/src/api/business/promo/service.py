@@ -60,10 +60,15 @@ def create_promo(session: Session, schema: PromoCreate, business: Business) -> P
         for uniq in schema.promo_unique:
             promos.append(SubPromo(promo_common=uniq, promo=promo))
         promo.promo_unique = promos
+        if len(promos) == 0:
+            promo.active = False
     else:
         if schema.promo_common is None or schema.promo_unique is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         promo.promo_common = schema.promo_common
+
+    if schema.max_count == 0:
+        promo.active = False
 
     session.add(promo)
     session.commit()
@@ -154,6 +159,9 @@ def update_promo(promo: Promo, schema: PromoPatch, session: Session) -> Promo:
 
         if promo.mode == "COMMON" and schema.max_count >= promo.used_count and not promo.active:
             promo.active = True
+
+        if schema.max_count == 0:
+            promo.active = False
 
 
     for param in schema.dict(exclude_unset=True):
