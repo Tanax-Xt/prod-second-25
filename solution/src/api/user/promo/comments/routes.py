@@ -24,7 +24,7 @@ from src.db.deps import Session
 comments_router = APIRouter(prefix="/{id}/comments")
 
 
-@comments_router.post("", status_code=status.HTTP_200_OK, response_model=CommentResponse,
+@comments_router.post("", status_code=status.HTTP_201_CREATED, response_model=CommentResponse,
                       response_model_exclude_none=True)
 async def add_comment(id: uuid.UUID,
                       schema: CommentText,
