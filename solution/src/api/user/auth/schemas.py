@@ -14,15 +14,14 @@ Modifications made by Danila Sedelnikov on January 2025.
 from typing import Optional
 
 from fastapi import HTTPException, status
-from pydantic import constr, HttpUrl, BaseModel, validator
-from pydantic_extra_types.country import CountryAlpha2
+from pydantic import constr, HttpUrl, validator
 
 from src.api.business.promo.deps import Country
 from src.api.schemas import Email, Password, Age
 
 
 class UserTargetSettings(Age):
-    country: CountryAlpha2
+    country: str
 
     @validator('country')
     def lowercase_country(cls, v):
