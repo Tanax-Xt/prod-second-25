@@ -15,7 +15,7 @@ import json
 from datetime import datetime
 
 import requests
-from sqlalchemy import func, desc
+from sqlalchemy import desc
 
 from src.api.business.models import Promo, PromoActivateToUser
 from src.api.business.promo.service import get_active_subpromo_by_promo_id, get_promo_by_id
@@ -43,14 +43,14 @@ def delete_like_to_promo_by_user(user: User, promo: Promo, session: Session):
 
 
 def is_correct_country(user: User, promo: Promo) -> bool:
-    return promo.country is None or func.lower(promo.country) == func.lower(user.country)
+    return promo.country is None or (promo.country.lower() == user.country.lower())
 
 
 def is_correct_age(user: User, promo: Promo) -> bool:
     return (promo.age_from is None and promo.age_until is None) or \
-        (promo.age_from <= user.age <= promo.age_until) or \
         (promo.age_from is None and user.age <= promo.age_until) or \
-        (promo.age_from <= user.age and promo.age_until is None)
+        (promo.age_from <= user.age and promo.age_until is None) or \
+        (promo.age_from <= user.age <= promo.age_until)
 
 
 def is_user_fits_to_target(user: User, promo: Promo) -> bool:

@@ -105,6 +105,9 @@ async def activate_promo(id: uuid.UUID, Authorization: str = Header(None), sessi
     user = get_user_by_token(Authorization, session)
     promo = get_promo_by_id(id, session)
 
+    if promo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Промокод не найден.")
+
     if not is_promo_is_active_on_cur_date(promo, session):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
